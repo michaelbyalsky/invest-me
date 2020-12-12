@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       userId: DataTypes.STRING,
       cash: DataTypes.FLOAT,
-      investments: DataTypes.FLOAT,
     },
     {
       sequelize,

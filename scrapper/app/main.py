@@ -17,6 +17,8 @@ async def hello():
 @app.get('/stocks-list')
 async def stock_list():
     stocks = all_stocks()
+    if not stocks:
+        return { "error": "error occured"}
     return stocks
 
 @app.get('/all-symbols')

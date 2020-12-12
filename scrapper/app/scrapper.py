@@ -10,7 +10,8 @@ def fetch_data(url):
         data = requests.get(url, headers=headers)
         return data
     except Exception as e:
-        return {"error": e}
+        print(e)
+        return 
 
 
 def parse_data(data):
@@ -102,6 +103,8 @@ main_globes_url = "https://www.bizportal.co.il/realestates/quote/generalview/"
 
 def all_stocks():
     res = fetch_data(globes_url)
+    if not res: 
+        return 
     parsed_data = parse_data(res.text)
     table_rows = parsed_data.findAll('tr', class_='data')
     stocksArray = []

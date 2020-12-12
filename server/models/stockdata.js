@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   StockData.init({
+    title: DataTypes.STRING,    
     symbol: DataTypes.STRING,
     lastRate: DataTypes.FLOAT,
     link: DataTypes.STRING,
