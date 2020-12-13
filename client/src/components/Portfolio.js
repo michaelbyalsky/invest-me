@@ -164,7 +164,7 @@ export default function Portfolio() {
     try {
       const obj = {
         symbol: parseFloat(stockForSell),
-        amount: -Number(stockSellAmount),
+        amount: Number(stockSellAmount),
         negetive: ifNegetive,
         price: sellPrice,
       };
@@ -172,6 +172,7 @@ export default function Portfolio() {
       const { data } = await network.patch("/users/stocks", obj);
       setStockForSell("");
       setStockSellAmount(0);
+      getUserPortfolio();
     } catch (err) {
       console.error(err);
     }

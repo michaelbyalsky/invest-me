@@ -91,7 +91,8 @@ Router.get("/stocks", async (req, res) => {
       ...obj,
       change: (obj["Stock.lastRate"] / obj.avgPrice) * 100 - 100,
     }));
-    res.json(maped);
+    const filtered = maped.filter((stock) => stock.totalAmount > 0);
+    res.json(filtered);
   } catch (err) {
     console.error(err);
   }
@@ -127,6 +128,7 @@ Router.post("/stocks", async (req, res) => {
       symbol: Number(req.body.symbol),
       price: req.body.price,
       amount: req.body.amount,
+      userId: req.user.id,
     };
     await UserStock.create(obj);
     await UserMoney.decrement(
@@ -150,7 +152,7 @@ Router.patch("/stocks", async (req, res) => {
       userId: req.user.id,
       symbol: req.body.symbol,
       price: req.body.price,
-      amount: req.body.amount,
+      amount: -req.body.amount,
       operation: "sell",
     };
     console.log(obj);
@@ -162,12 +164,12 @@ Router.patch("/stocks", async (req, res) => {
       },
     });
     // 0.25 tax fee
-
+    console.log(obj.amount);
     await UserMoney.increment(
       {
         cash: !req.body.negetive
-          ? obj.amount * stock.lastRate * 0.75
-          : obj.amount * stock.lastRate,
+          ? ((req.body.amount * stock.lastRate) / 100) * 0.75
+          : (req.body.amount * stock.lastRate) / 100,
       },
       {
         where: { userId: req.user.id },
