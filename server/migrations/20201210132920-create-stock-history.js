@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       symbol: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER,
+        foreignKey: true,
       },
       last_rate: {
         type: Sequelize.FLOAT

@@ -69,7 +69,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       symbol: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER,
+        foreignKey: true,
       },
       created_at: {
         allowNull: false,

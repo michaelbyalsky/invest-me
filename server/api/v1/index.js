@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
 };
 
 v1Router.use("/auth", require("./auth"));
-v1Router.use("/stocks",/*verifyToken,*/ require("./stocks"));
+v1Router.use("/stocks",verifyToken, require("./stocks"));
 v1Router.use("/users",verifyToken, require("./users"));
 
 v1Router.use(unknownEndpoint);

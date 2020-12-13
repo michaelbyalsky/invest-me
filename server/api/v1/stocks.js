@@ -1,6 +1,10 @@
 const axios = require("axios");
 const Router = require("express").Router();
-const { Stock, StockData, BigStockData } = require("../../models");
+const {
+  Stock,
+  BigStockData,
+  StockHistory,
+} = require("../../models");
 const { Op } = require("sequelize");
 
 Router.post("/all-data", async (req, res) => {
@@ -19,8 +23,9 @@ Router.post("/all-data", async (req, res) => {
 Router.get("/stocks-array", async (req, res) => {
   try {
     const { data } = await axios.get("http://localhost:8000/stocks-list");
-    await StockData.destroy({ truncate: true, cascade: false });
-    await StockData.bulkCreate(data);
+    await Stock.destroy({ truncate: true, cascade: false });
+    await Stock.bulkCreate(data);
+    await StockHistory.bulkCreate(data);
     return res.json({ updated: true });
   } catch (err) {
     console.log(err);
@@ -30,7 +35,7 @@ Router.get("/stocks-array", async (req, res) => {
 Router.get("/search", async (req, res) => {
   console.log(req.query.q);
   try {
-    const data = await StockData.findAll({
+    const data = await Stock.findAll({
       limit: 10,
       where: {
         title: {
@@ -38,7 +43,7 @@ Router.get("/search", async (req, res) => {
         },
       },
     });
-    res.json(data)
+    res.json(data);
   } catch (err) {
     console.log(err);
   }
@@ -53,6 +58,14 @@ Router.get("/all", async (req, res) => {
   }
 });
 
+Router.get("/all-regular", async (req, res) => {
+  try {
+    const data = await Stock.findAll();
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 
 module.exports = Router;

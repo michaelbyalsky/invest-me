@@ -41,17 +41,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+// function createData(name, calories, fat, carbs, protein) {
+//   return { name, calories, fat, carbs, protein };
+// }
+
+// const rows = [
+//   createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+//   createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+//   createData("Eclair", 262, 16.0, 24, 6.0),
+//   createData("Cupcake", 305, 3.7, 67, 4.3),
+//   createData("Gingerbread", 356, 16.0, 49, 3.9),
+// ];
+
+
+const financial = (x) => {
+  return Number.parseFloat(x).toFixed(2);
 }
 
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
 
 export default function Portfolio() {
   const classes = useStyles();
@@ -64,6 +70,7 @@ export default function Portfolio() {
   const [amount, setAmount] = useState(0);
   const [price, setPrice] = useState(0);
   const [value, setValue] = useState("");
+  const [rows, setRows] = useState([]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -101,17 +108,31 @@ export default function Portfolio() {
     }
   }, []);
 
+  const getUserPortfolio = useCallback(async () => {
+    try {
+      const { data } = await network.get("/users/stocks");
+      console.log(data);
+      setRows(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   const onAddStock = async () => {
+    if (price < 0) {
+      return 
+    }
     try {
       const obj = {
         symbol: stockToUpdate,
         price: price,
-        amount: amount
-      }
-      const { data } = await network.post("/api/v1/user/stocks", obj);
-      setStockToUpdate('')
-      setPrice('')
-      setAmount(0)
+        amount: Number(amount),
+      };
+      const { data } = await network.post("/users/stocks", obj);
+      getUserPortfolio()
+      setStockToUpdate("");
+      setPrice("");
+      setAmount(0);
     } catch (err) {
       console.error(err);
     }
@@ -131,6 +152,11 @@ export default function Portfolio() {
     }
   };
 
+  //remove stock
+  const onDeleteStock = useCallback(() => {
+
+  },[])
+
   const handleInputChange = (value) => {
     setQuery(value);
   };
@@ -143,6 +169,7 @@ export default function Portfolio() {
 
   useEffect(() => {
     fetchUserMoney();
+    getUserPortfolio();
   }, []);
   console.log(query);
   return (
@@ -228,8 +255,8 @@ export default function Portfolio() {
             <Button autoFocus onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleClose} color="primary">
-              Subscribe
+            <Button onClick={onAddStock} color="primary">
+              Add stock
             </Button>
           </DialogActions>
         </Dialog>
@@ -239,25 +266,30 @@ export default function Portfolio() {
               <TableRow>
                 <TableCell>Stock</TableCell>
                 <TableCell align="right">Symbol</TableCell>
-                <TableCell align="right">Value</TableCell>
-                <TableCell align="right">amount</TableCell>
+                <TableCell align="right">Last rate</TableCell>
+                <TableCell align="right">Amount</TableCell>
                 <TableCell align="right">AVG b.price</TableCell>
+                <TableCell align="right">Total value shekel</TableCell>
                 <TableCell align="right">Yield</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow key={row.name}>
-                  <TableCell component="th" scope="row">
-                    {row.name}
-                  </TableCell>
-                  <TableCell align="right">{row.calories}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
-                  <TableCell align="right">amount</TableCell>
-                  <TableCell align="right">{row.carbs}</TableCell>
-                  <TableCell align="right">{row.protein}</TableCell>
-                </TableRow>
-              ))}
+              {rows.length !== 0 &&
+                rows.map((row) => (
+                  <TableRow key={row.title}>
+                    <TableCell component="th" scope="row">
+                      {row["Stock.title"]}
+                    </TableCell>
+                    <TableCell align="right">{row.symbol}</TableCell>
+                    <TableCell align="right">{row["Stock.lastRate"]}</TableCell>
+                    <TableCell align="right">{row.totalAmount}</TableCell>
+                    <TableCell align="right">{financial(row.avgPrice)}</TableCell>
+                    <TableCell align="right">{financial(row.totalCost / 100)}</TableCell>
+                    <TableCell align="right">{financial(row.change)}%</TableCell>
+                    <button onClick={onDeleteStock} >delete</button>
+
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>

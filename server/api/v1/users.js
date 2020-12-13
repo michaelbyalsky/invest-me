@@ -1,5 +1,5 @@
 const Router = require("express").Router();
-const { User, UserMoney } = require("../../models");
+const { User, UserMoney, UserStock, Stock } = require("../../models");
 const { registerValidation, loginValidation } = require("./validation");
 const bcrypt = require("bcryptjs");
 const sequelize = require("sequelize");
@@ -15,12 +15,47 @@ Router.get("/money", async (req, res) => {
   });
 });
 
+
+
 Router.get("/stocks", async (req, res) => {
-  const user = await UserStock.findOne({
-    where: {
-      userId: req.user.userId,
-    },
-  });
+  try {
+    const user = await UserStock.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      include: {
+        model: Stock,
+        attributes: ["title", "lastRate"]
+      },
+      attributes: [
+        "symbol",
+        "userId",
+        [
+          sequelize.fn(
+            "SUM",
+            sequelize.where(
+              sequelize.col("price"),
+              "*",
+              sequelize.col("amount")
+            )
+          ),
+          "totalCost",
+        ],
+        [sequelize.fn("SUM", sequelize.col("amount")), "totalAmount"],
+      ],
+      group: ['symbol'],
+      order: [
+        [sequelize.fn("SUM", sequelize.col("totalCost")), "DESC"],
+        // [sequelize.fn("AVG", sequelize.col("avgPrice")), "DESC"],
+      ],
+      raw: true,
+    });
+    const addAvgPrice = user.map((obj) => ({...obj, avgPrice: obj.totalCost / obj.totalAmount}))
+    const maped = addAvgPrice.map((obj) => ({...obj, change: obj["Stock.lastRate"] /  obj.avgPrice * 100 - 100}))
+    res.json(maped);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 Router.patch("/money", async (req, res) => {
@@ -52,13 +87,14 @@ Router.patch("/money", async (req, res) => {
 
 Router.post("/stocks", async (req, res) => {
   try {
-    const obj = {
-      symbol: req.body.symbol,
-      amount: req.body.amount,
+    console.log(req.body);
+  
+    await UserStock.create({ 
+      userId: req.user.id,
+      symbol: Number(req.body.symbol),
       price: req.body.price,
-      userId: req.use.userId
-    }
-    await UserStock.create(obj);
+      amount: req.body.amount,
+    });
     return res.json({ creatted: true });
   } catch (err) {
     console.log(err);

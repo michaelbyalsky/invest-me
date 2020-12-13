@@ -12,15 +12,16 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
       });
       this.belongsTo(models.Stock, {
-        foreignKey: "symbol",
-      })
+        foreignKey: "symbol", targetKey: "symbol"
+      });
     }
   }
   UserStock.init(
     {
       userId: DataTypes.STRING,
-      symbol: DataTypes.STRING,
+      symbol: DataTypes.INTEGER,
       price: DataTypes.FLOAT,
+      amount: DataTypes.INTEGER,
     },
     {
       sequelize,

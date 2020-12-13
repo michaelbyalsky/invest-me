@@ -13,7 +13,16 @@ module.exports = {
       },
       symbol: {
         type: Sequelize.INTEGER,
-        unique: true,
+        foreignKey: true,
+      },
+      last_rate: {
+        type: Sequelize.FLOAT
+      },
+      link: {
+        type: Sequelize.STRING
+      },
+      today_change_precent: {
+        type: Sequelize.FLOAT
       },
       created_at: {
         allowNull: false,

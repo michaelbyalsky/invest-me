@@ -1,6 +1,6 @@
 module.exports = [
   {
-    userId: 1,
+    user_id: 1,
     symbol: 373019,
     amount: 2,
     price: 184.8,
@@ -8,7 +8,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 1,
+    user_id: 1,
     symbol: 373019,
     amount: 1,
     price: 183.2,
@@ -16,7 +16,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 1,
+    user_id: 1,
     symbol: 373019,
     amount: 1,
     price: 183.2,
@@ -24,7 +24,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 1,
+    user_id: 1,
     symbol: 1100957,
     amount: 2,
     price: 325.2,
@@ -32,7 +32,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 1,
+    user_id: 1,
     symbol: 1100957,
     amount: 2,
     price: 322.2,
@@ -40,7 +40,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 2,
+    user_id: 2,
     symbol: 373019,
     amount: 2,
     price: 184.8,
@@ -48,7 +48,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 2,
+    user_id: 2,
     symbol: 373019,
     amount: 1,
     price: 183.2,
@@ -56,7 +56,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 2,
+    user_id: 2,
     symbol: 373019,
     amount: 1,
     price: 183.2,
@@ -64,7 +64,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 2,
+    user_id: 2,
     symbol: 1100957,
     amount: 2,
     price: 325.2,
@@ -72,7 +72,7 @@ module.exports = [
     updated_at: new Date(),
   },
   {
-    userId: 2,
+    user_id: 2,
     symbol: 1100957,
     amount: 3,
     price: 322.2,
