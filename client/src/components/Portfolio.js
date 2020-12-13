@@ -53,17 +53,16 @@ const useStyles = makeStyles((theme) => ({
 //   createData("Gingerbread", 356, 16.0, 49, 3.9),
 // ];
 
-
 const financial = (x) => {
   return Number.parseFloat(x).toFixed(2);
-}
-
+};
 
 export default function Portfolio() {
   const classes = useStyles();
   const [cash, setCash] = useState(0);
   const [investments, setInvestments] = useState(0);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [openSell, setOpenSell] = useState(false);
   const [stocksArray, setStocksArray] = useRecoilState(stocksArrayState);
   const [query, setQuery] = useState("");
   const [stockToUpdate, setStockToUpdate] = useState(null);
@@ -71,9 +70,16 @@ export default function Portfolio() {
   const [price, setPrice] = useState(0);
   const [value, setValue] = useState("");
   const [rows, setRows] = useState([]);
-
+  const [stockSellAmount, setStockSellAmount] = useState(0);
+  const [stockForSell, setStockForSell] = useState("");
+  const [ifNegetive, setIfNegetive] = useState(false);
+  const [sellPrice, setSellPrice] = useState(0);
   const handleClickOpen = () => {
     setOpen(true);
+  };
+
+  const handleCloseSell = () => {
+    setOpenSell(false);
   };
 
   const handleClose = () => {
@@ -99,10 +105,12 @@ export default function Portfolio() {
 
   const fetchUserMoney = useCallback(async () => {
     try {
-      // const { data } = network.get("/users/money");
-      // const { cash: userCash, investments: userInvestments } = data;
-      // setCash(userCash);
-      // setInvestments(userInvestments);
+      const {
+        data: { cash },
+      } = await network.get("/users/money");
+      const { data } = await network.get("/users/investments");
+      setCash(cash);
+      setInvestments(financial(data[0].totalCost / 1000));
     } catch (err) {
       console.error(err);
     }
@@ -111,7 +119,6 @@ export default function Portfolio() {
   const getUserPortfolio = useCallback(async () => {
     try {
       const { data } = await network.get("/users/stocks");
-      console.log(data);
       setRows(data);
     } catch (err) {
       console.error(err);
@@ -119,8 +126,8 @@ export default function Portfolio() {
   }, []);
 
   const onAddStock = async () => {
-    if (price < 0) {
-      return 
+    if (Number(amount) <= 0) {
+      return;
     }
     try {
       const obj = {
@@ -129,7 +136,7 @@ export default function Portfolio() {
         amount: Number(amount),
       };
       const { data } = await network.post("/users/stocks", obj);
-      getUserPortfolio()
+      getUserPortfolio();
       setStockToUpdate("");
       setPrice("");
       setAmount(0);
@@ -153,13 +160,38 @@ export default function Portfolio() {
   };
 
   //remove stock
-  const onDeleteStock = useCallback(() => {
+  const onSellStock = useCallback(async () => {
+    try {
+      const obj = {
+        symbol: parseFloat(stockForSell),
+        amount: -Number(stockSellAmount),
+        negetive: ifNegetive,
+        price: sellPrice,
+      };
+      console.log(obj);
+      const { data } = await network.patch("/users/stocks", obj);
+      setStockForSell("");
+      setStockSellAmount(0);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [sellPrice, ifNegetive, stockForSell, stockSellAmount]);
 
-  },[])
+  const onPressSell = useCallback((value) => {
+    console.log(value);
+    setStockForSell(value.symbol);
+    if (value.yield < 0) {
+      setIfNegetive(true);
+    } else {
+      setIfNegetive(false);
+    }
+    setSellPrice(value["Stock.lastRate"]);
+    setOpenSell(true);
+  }, []);
 
-  const handleInputChange = (value) => {
+  const handleInputChange = useCallback((value) => {
     setQuery(value);
-  };
+  }, []);
 
   const handleSelectChange = (value) => {
     setStockToUpdate(value.symbol);
@@ -177,11 +209,10 @@ export default function Portfolio() {
       <div className={classes.moneyBar}>
         <div>
           <TextField
-            label="Dense"
+            label="Cash"
             id="outlined-margin-dense"
-            defaultValue={cash}
+            value={cash}
             className={classes.textField}
-            helperText="Some important text"
             margin="dense"
             variant="outlined"
             type="number"
@@ -189,11 +220,10 @@ export default function Portfolio() {
         </div>
         <div>
           <TextField
-            label="Dense"
+            label="Investments"
             id="outlined-margin-dense"
-            defaultValue={investments}
+            value={investments}
             className={classes.textField}
-            helperText="Some important text"
             margin="dense"
             variant="outlined"
             type="number"
@@ -204,6 +234,41 @@ export default function Portfolio() {
         <Button variant="outlined" color="primary" onClick={handleClickOpen}>
           new stock
         </Button>
+        <Dialog
+          fullWidth="true"
+          open={openSell}
+          onClose={handleCloseSell}
+          aria-labelledby="draggable-dialog-title"
+        >
+          <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
+            Add stock
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Add new stock to your stock portfolio
+            </DialogContentText>
+
+            <TextField
+              label="amount"
+              id="outlined-margin-dense"
+              value={stockSellAmount}
+              className={classes.textField}
+              helperText="stock sell amount"
+              margin="dense"
+              variant="outlined"
+              type="number"
+              onChange={(e) => setStockSellAmount(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleCloseSell} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={onSellStock} color="primary">
+              sell stock
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Dialog
           fullWidth="true"
           open={open}
@@ -283,11 +348,16 @@ export default function Portfolio() {
                     <TableCell align="right">{row.symbol}</TableCell>
                     <TableCell align="right">{row["Stock.lastRate"]}</TableCell>
                     <TableCell align="right">{row.totalAmount}</TableCell>
-                    <TableCell align="right">{financial(row.avgPrice)}</TableCell>
-                    <TableCell align="right">{financial(row.totalCost / 100)}</TableCell>
-                    <TableCell align="right">{financial(row.change)}%</TableCell>
-                    <button onClick={onDeleteStock} >delete</button>
-
+                    <TableCell align="right">
+                      {financial(row.avgPrice)}
+                    </TableCell>
+                    <TableCell align="right">
+                      {financial(row.totalCost / 100)}
+                    </TableCell>
+                    <TableCell align="right">
+                      {financial(row.change)}%
+                    </TableCell>
+                    <button onClick={() => onPressSell(row)}>delete</button>
                   </TableRow>
                 ))}
             </TableBody>

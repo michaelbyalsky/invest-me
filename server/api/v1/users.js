@@ -5,17 +5,50 @@ const bcrypt = require("bcryptjs");
 const sequelize = require("sequelize");
 
 Router.get("/money", async (req, res) => {
-  const user = await User.findOne({
-    where: {
-      username: req.user.username,
-    },
-    include: {
-      model: UserMoney,
-    },
-  });
+  try {
+    const user = await UserMoney.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+    res.json(user);
+  } catch (err) {
+    res.json(err.message);
+  }
 });
 
-
+Router.get("/investments", async (req, res) => {
+  try {
+    const user = await UserStock.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      attributes: [
+        "userId",
+        [
+          sequelize.fn(
+            "SUM",
+            sequelize.where(
+              sequelize.col("price"),
+              "*",
+              sequelize.col("amount")
+            )
+          ),
+          "totalCost",
+        ],
+      ],
+      group: ["userId"],
+      order: [
+        [sequelize.fn("SUM", sequelize.col("totalCost")), "DESC"],
+        // [sequelize.fn("AVG", sequelize.col("avgPrice")), "DESC"],
+      ],
+      raw: true,
+    });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 Router.get("/stocks", async (req, res) => {
   try {
@@ -25,7 +58,7 @@ Router.get("/stocks", async (req, res) => {
       },
       include: {
         model: Stock,
-        attributes: ["title", "lastRate"]
+        attributes: ["title", "lastRate"],
       },
       attributes: [
         "symbol",
@@ -43,15 +76,21 @@ Router.get("/stocks", async (req, res) => {
         ],
         [sequelize.fn("SUM", sequelize.col("amount")), "totalAmount"],
       ],
-      group: ['symbol'],
+      group: ["symbol"],
       order: [
         [sequelize.fn("SUM", sequelize.col("totalCost")), "DESC"],
         // [sequelize.fn("AVG", sequelize.col("avgPrice")), "DESC"],
       ],
       raw: true,
     });
-    const addAvgPrice = user.map((obj) => ({...obj, avgPrice: obj.totalCost / obj.totalAmount}))
-    const maped = addAvgPrice.map((obj) => ({...obj, change: obj["Stock.lastRate"] /  obj.avgPrice * 100 - 100}))
+    const addAvgPrice = user.map((obj) => ({
+      ...obj,
+      avgPrice: obj.totalCost / obj.totalAmount,
+    }));
+    const maped = addAvgPrice.map((obj) => ({
+      ...obj,
+      change: (obj["Stock.lastRate"] / obj.avgPrice) * 100 - 100,
+    }));
     res.json(maped);
   } catch (err) {
     console.error(err);
@@ -60,12 +99,9 @@ Router.get("/stocks", async (req, res) => {
 
 Router.patch("/money", async (req, res) => {
   try {
-    const hasPotfolio = await User.count({
+    const hasPotfolio = await UserMoney.count({
       where: {
-        username: req.user.username,
-      },
-      include: {
-        model: UserMoney,
+        username: req.user.id,
       },
     });
     if (hasPotfolio === 0) {
@@ -87,15 +123,58 @@ Router.patch("/money", async (req, res) => {
 
 Router.post("/stocks", async (req, res) => {
   try {
-    console.log(req.body);
-  
-    await UserStock.create({ 
-      userId: req.user.id,
+    const obj = {
       symbol: Number(req.body.symbol),
       price: req.body.price,
       amount: req.body.amount,
+    };
+    await UserStock.create(obj);
+    await UserMoney.decrement(
+      { cash: (obj.price * obj.amount) / 100 },
+      {
+        where: { userId: req.user.id },
+      }
+    );
+
+    return res.json({ created: true });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//sell stocks
+Router.patch("/stocks", async (req, res) => {
+  try {
+    console.log(req.body);
+    const obj = {
+      userId: req.user.id,
+      symbol: req.body.symbol,
+      price: req.body.price,
+      amount: req.body.amount,
+      operation: "sell",
+    };
+    console.log(obj);
+    await UserStock.create(obj);
+    const stock = await Stock.findOne({
+      attributes: ["lastRate"],
+      where: {
+        symbol: req.body.symbol,
+      },
     });
-    return res.json({ creatted: true });
+    // 0.25 tax fee
+
+    await UserMoney.increment(
+      {
+        cash: !req.body.negetive
+          ? obj.amount * stock.lastRate * 0.75
+          : obj.amount * stock.lastRate,
+      },
+      {
+        where: { userId: req.user.id },
+      }
+    );
+
+    return res.json({ created: true });
   } catch (err) {
     console.log(err);
   }

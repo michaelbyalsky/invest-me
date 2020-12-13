@@ -15,6 +15,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         foreignKey: true,
       },
+      operation: {
+        type: Sequelize.DataTypes.ENUM,
+        values: ["buy", "sell"],
+        defaultValue: "buy",
+      },
       price: {
         type: Sequelize.FLOAT,
       },

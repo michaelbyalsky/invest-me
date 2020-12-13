@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       symbol: DataTypes.INTEGER,
       price: DataTypes.FLOAT,
       amount: DataTypes.INTEGER,
+      operation: DataTypes.ENUM("buy", "sell"),
     },
     {
       sequelize,
