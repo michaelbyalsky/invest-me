@@ -13,6 +13,7 @@ import React from "react";
 import clsx from "clsx";
 import SideBar from "./components/SideBar";
 import BigDataList from "./components/BigDataList";
+import Calculator from "./components/Calculator";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -34,23 +35,22 @@ function App() {
       <Router>
         <div className={classes.root}>
           <CssBaseline />
-          {currentUser && 
-          
-          <Header
-            handleDrawerClose={handleDrawerClose}
-            drawerOpen={drawerOpen}
-            handleDrawerOpen={handleDrawerOpen}
-            classes={classes}
-          />
-        }
-         {currentUser &&
-          <SideBar
-            handleDrawerClose={handleDrawerClose}
-            drawerOpen={drawerOpen}
-            handleDrawerOpen={handleDrawerOpen}
-            classes={classes}
-          />
-         }
+          {currentUser && (
+            <Header
+              handleDrawerClose={handleDrawerClose}
+              drawerOpen={drawerOpen}
+              handleDrawerOpen={handleDrawerOpen}
+              classes={classes}
+            />
+          )}
+          {currentUser && (
+            <SideBar
+              handleDrawerClose={handleDrawerClose}
+              drawerOpen={drawerOpen}
+              handleDrawerOpen={handleDrawerOpen}
+              classes={classes}
+            />
+          )}
           <Switch>
             <main
               className={clsx(classes.content, {
@@ -61,6 +61,7 @@ function App() {
               <PrivateRoute exact path="/" component={Home} />
               <PrivateRoute exact path="/portfolio" component={Portfolio} />
               <PrivateRoute exact path="/all-stocks" component={BigDataList} />
+              <PrivateRoute exact path="/calculator" component={Calculator} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
             </main>

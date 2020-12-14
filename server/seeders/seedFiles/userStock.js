@@ -20,7 +20,7 @@ module.exports = [
   {
     user_id: 1,
     symbol: 373019,
-    amount: -1,
+    amount: 1,
     operation: "sell",
     price: 183.2,
     created_at: new Date(),
@@ -66,7 +66,7 @@ module.exports = [
   {
     user_id: 2,
     symbol: 373019,
-    amount: -1,
+    amount: 1,
     operation: "sell",
     price: 183.2,
     created_at: new Date(),

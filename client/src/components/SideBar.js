@@ -23,6 +23,7 @@ import WorkIcon from "@material-ui/icons/Work";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import HomeIcon from "@material-ui/icons/Home";
 import GroupIcon from "@material-ui/icons/Group";
+import TuneIcon from "@material-ui/icons/Tune";
 
 const SideBar = ({
   classes,
@@ -52,6 +53,11 @@ const SideBar = ({
       path: "/compatition",
       title: "compatition",
       icon: <GroupIcon />,
+    },
+    {
+      path: "/calculator",
+      title: "calculator",
+      icon: <TuneIcon />,
     },
   ];
 
@@ -94,4 +100,3 @@ const SideBar = ({
 };
 
 export default SideBar;
-

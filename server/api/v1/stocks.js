@@ -1,10 +1,6 @@
 const axios = require("axios");
 const Router = require("express").Router();
-const {
-  Stock,
-  BigStockData,
-  StockHistory,
-} = require("../../models");
+const { Stock, BigStockData, StockHistory } = require("../../models");
 const { Op } = require("sequelize");
 
 Router.post("/all-data", async (req, res) => {
@@ -51,7 +47,7 @@ Router.get("/search", async (req, res) => {
 
 Router.get("/all", async (req, res) => {
   try {
-    const data = await BigStockData.findAll();
+    const data = await BigStockData.findAll({});
     res.json(data);
   } catch (err) {
     console.log(err);
@@ -67,5 +63,55 @@ Router.get("/all-regular", async (req, res) => {
   }
 });
 
+Router.get("/periods", async (req, res) => {
+  try {
+    const data = Object.keys(BigStockData.rawAttributes);
+    const filtered = data.filter(
+      (key) =>
+        key !== "id" &&
+        key !== "createdAt" &&
+        key !== "updatedAt" &&
+        key !== "title" &&
+        key !== "symbol" &&
+        key !== "currentRate"
+    );
+    res.json(filtered);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+Router.get("/one-stock-data", async (req, res) => {
+  try {
+    const link = req.query.q;
+    const { data } = await axios.get(
+      `http://localhost:8000/one-stock?q=${link}`
+    );
+    const updated = await BigStockData.update(data, {
+      where: {
+        symbol: data.symbol,
+      },
+    });
+    const stock = await BigStockData.findOne({
+      attributes: {
+        exclude: [
+          "createdAt",
+          "updatedAt",
+          "title",
+          "symbol",
+          "id",
+          "currentRate",
+          "dayChange",
+        ],
+      },
+      where: {
+        symbol: data.symbol,
+      },
+    });
+    res.json(stock);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 module.exports = Router;

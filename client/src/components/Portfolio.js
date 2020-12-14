@@ -17,9 +17,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import network from "../network/index";
 import { useRecoilState } from "recoil";
 import { stocksArrayState } from "../recoil/Atom";
-import { useForm } from "react-hook-form";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 import AsyncSelect from "react-select/async";
 
 const useStyles = makeStyles((theme) => ({
@@ -78,13 +75,13 @@ export default function Portfolio() {
     setOpen(true);
   };
 
-  const handleCloseSell = () => {
+  const handleCloseSell = useCallback(() => {
     setOpenSell(false);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpen(false);
-  };
+  }, []);
 
   const fetchAllStocks = async () => {
     try {
@@ -125,7 +122,7 @@ export default function Portfolio() {
     }
   }, []);
 
-  const onAddStock = async () => {
+  const onAddStock = useCallback(async () => {
     if (Number(amount) <= 0) {
       return;
     }
@@ -143,9 +140,9 @@ export default function Portfolio() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [stockToUpdate, price, amount]);
 
-  const loadingOption = async () => {
+  const loadingOption = useCallback(async () => {
     try {
       const { data } = await network.get(`/stocks/search?q=${query}`);
       const maped = data.map((stock) => ({
@@ -157,7 +154,7 @@ export default function Portfolio() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [query]);
 
   //remove stock
   const onSellStock = useCallback(async () => {
@@ -194,11 +191,11 @@ export default function Portfolio() {
     setQuery(value);
   }, []);
 
-  const handleSelectChange = (value) => {
+  const handleSelectChange = useCallback((value) => {
     setStockToUpdate(value.symbol);
     setPrice(value.price);
     setValue(value.lable);
-  };
+  }, []);
 
   useEffect(() => {
     fetchUserMoney();

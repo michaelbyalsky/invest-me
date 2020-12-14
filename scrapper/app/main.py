@@ -40,10 +40,10 @@ async def get_all_data():
 
 
 
-@app.get('/one-stock')
-async def get_one_stock(url='https://www.bizportal.co.il/realestates/quote/performance/373019'):
-    stock = one_stock(url)
-    stock['symbol'] = url.split('/')[-1]
+@app.get('/one-stock/')
+async def get_one_stock(q: str):
+    stock = one_stock(q)
+    stock['symbol'] = q.split('/')[-1]
     return stock
 
 if __name__ == "__main__":
