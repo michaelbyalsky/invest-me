@@ -3,6 +3,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import AsyncSelect from "react-select/async";
 import network from "../network/index";
+import Select from "react-select";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const financial = (x) => {
-    return Number.parseFloat(x).toFixed(2);
-  };
+  return Number.parseFloat(x).toFixed(2);
+};
 
 const Calculator = () => {
   const classes = useStyles();
@@ -33,7 +34,8 @@ const Calculator = () => {
   const [query, setQuery] = useState(null);
   const [stockLink, setStockLink] = useState(null);
   const [periodYield, setPeriodYield] = useState("");
-  const [estimateYield, setEstimateYield] = useState(0);
+  const [estimateYield, setEstimateYield] = useState('');
+  const [options, setOptions] = useState();
 
   const handleSelectStockChange = useCallback(async (value) => {
     setStockLink(value.link);
@@ -43,7 +45,7 @@ const Calculator = () => {
   }, []);
 
   useEffect(() => {
-    setEstimateYield(financial(cash * periodYield / 100));
+    setEstimateYield(financial((cash * periodYield) / 100));
   }, [cash, periodYield]);
 
   useEffect(() => {
@@ -80,9 +82,9 @@ const Calculator = () => {
   }, [query]);
 
   const loadingPeriodOptions = useCallback(async () => {
-    if (!stockLink) {
-      return;
-    }
+    // if (!stockLink) {
+    //   return;
+    // }
     try {
       const { data } = await network.get(
         `stocks/one-stock-data?q=${stockLink}`
@@ -90,6 +92,7 @@ const Calculator = () => {
       const list = Object.entries(data);
       const mapped = list.map((item) => ({ label: item[0], value: item[1] }));
       console.log(mapped);
+      setOptions(mapped);
       return mapped;
       //   return mapped;
     } catch (err) {
@@ -111,32 +114,33 @@ const Calculator = () => {
           onChange={onChangeCash}
         />
       </div>
-      <div>
-        <AsyncSelect
-          cacheOptions
-          defaultOptions
-          hideSelectedOptions={false}
-          // value={stockToUpdate}
-          onChange={handleSelectStockChange}
-          placeholder={"select stock"}
-          onInputChange={handleInputStockChange}
-          loadOptions={loadingStockOptions}
-        />
-      </div>
       <div className={classes.moneyBar}>
         <div>
           <AsyncSelect
-                    className={classes.textField}
-            style={{ width: "400px" }}
+            className={classes.textField}
             cacheOptions
             defaultOptions
             hideSelectedOptions={false}
             // value={stockToUpdate}
-            onChange={handleSelectPeriodChange}
-            placeholder={"select period"}
-            loadOptions={loadingPeriodOptions}
+            onChange={handleSelectStockChange}
+            placeholder={"select stock"}
+            onInputChange={handleInputStockChange}
+            loadOptions={loadingStockOptions}
           />
         </div>
+        <div>
+          <Select
+            className={classes.textField}
+            cacheOptions
+            // defaultOptions
+
+            onChange={handleSelectPeriodChange}
+            placeholder={"select period"}
+            options={options}
+          />
+        </div>
+      </div>
+      <div className={classes.moneyBar}>
         <div>
           <TextField
             label="Period yield %"
@@ -148,17 +152,17 @@ const Calculator = () => {
             type="number"
           />
         </div>
-      </div>
-      <div>
-        <TextField
-          label="Estimate yield"
-          id="outlined-margin-dense"
-          value={estimateYield}
-          className={classes.textField}
-          margin="dense"
-          variant="outlined"
-          type="number"
-        />
+        <div>
+          <TextField
+            label="Estimate yield"
+            id="outlined-margin-dense"
+            value={estimateYield}
+            className={classes.textField}
+            margin="dense"
+            variant="outlined"
+            type="number"
+          />
+        </div>
       </div>
     </div>
   );

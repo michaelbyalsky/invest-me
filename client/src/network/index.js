@@ -14,24 +14,24 @@ network.interceptors.request.use(
   },
 );
 
-// network.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const status = error.response ? error.response.status : null;
-//     const originalRequest = error.config;
+network.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error.response ? error.response.status : null;
+    const originalRequest = error.config;
 
-//     if (status === 408) {
-//       try {
-//         await network.post('/api/v1/auth/token', { token: Cookies.get('refreshToken') });
-//         const data = await network(originalRequest);
-//         return data;
-//       } catch (e) {
-//         throw e;
-//       }
-//     } else {
-//       throw error;
-//     }
-//   },
-// );
+    if (status === 408) {
+      try {
+        await network.post('/auth/token', { token: Cookies.get('refreshToken') });
+        const data = await network(originalRequest);
+        return data;
+      } catch (e) {
+        throw e;
+      }
+    } else {
+      throw error;
+    }
+  },
+);
 
 export default network;
