@@ -71,7 +71,6 @@ module.exports = [
     created_at: new Date(),
     updated_at: new Date(),
   },
-  
   {
     user_id: 2,
     operation: "buy",
@@ -82,6 +81,7 @@ module.exports = [
     created_at: new Date(),
     updated_at: new Date(),
   },
+  
   {
     user_id: 2,
     symbol: 1100957,
