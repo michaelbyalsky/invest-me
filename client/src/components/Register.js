@@ -68,6 +68,7 @@ export default function Register(props) {
       birthDate: birthDate,
       password: password,
     };
+    
     network
       .post("/auth/register", body)
       .then((res) => {
