@@ -4,9 +4,9 @@ name: CI-SERVER
 # events but only for the main branch
 on:
   pull_request:
-    branches: [master,staging] # if github changes the 'master' to 'main'
+    branches: [main] # if github changes the 'master' to 'main'
   push:
-    branches: [master,staging]
+    branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,7 +19,7 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: challenge_test
+          MYSQL_DATABASE: invests_test
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -41,8 +41,7 @@ jobs:
           npm run ciServer
         env:
           NODE_ENV: "test"
-          DB_TEST: "stocks_test"
-          RESET_PASSWORD_TOKEN: "dslkfrjr894utjeriiofj2389ey378wegsdyr8gf578th45igojkldfmvsf934rj490je"
+          DB_TEST: "invests_test"
           ACCESS_TOKEN_SECRET: "sdlkmf4930fjerfdfokvmdsldm1920ejeiockdv950gij54eorjflrf9430r4rjo34plre"
           REFRESH_TOKEN_SECRET: "dfgklfmg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf5822"
         working-directory: ./server
