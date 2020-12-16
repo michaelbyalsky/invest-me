@@ -18,8 +18,9 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpassword
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: invests_test
+          MYSQL_HOSTNAME: '127.0.0.1'
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
