@@ -20,11 +20,25 @@ module.exports = {
         values: ["buy", "sell"],
         defaultValue: "buy",
       },
-      price: {
+      sell_price: {
         type: Sequelize.FLOAT,
+        defaultValue: 0,
+        allowNull: false,
       },
-      amount: {
+      buy_price: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0,
+        allowNull: false,
+      },
+      sell_amount: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+      },
+      buy_amount: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
       },
       created_at: {
         allowNull: false,

@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 function generateToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "9s" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" });
 }
 
 Router.post("/logout", async (req, res) => {
@@ -151,12 +151,20 @@ Router.post("/register", async (req, res, next) => {
     if (validation.error) {
       return res.status(400).send(validation.error.details[0].message);
     }
-    const count = await User.count({
+    const countEmail = await User.count({
       where: {
         email: req.body.email,
       },
     });
-    if (count !== 0) {
+    if (countEmail !== 0) {
+      return res.status(400).json({ message: "email already exists" });
+    }
+    const countUsername = await User.count({
+      where: {
+        username: req.body.username,
+      },
+    });
+    if (countUsername !== 0) {
       return res.status(400).json({ message: "email already exists" });
     }
     //hash
@@ -169,10 +177,11 @@ Router.post("/register", async (req, res, next) => {
       email: req.body.email,
       birthDate: req.body.birthDate,
       password: hashedPassword,
-      perrmission: req.body.permission === "admin" ? "admin" : "user",
+      permission: req.body.permission === "admin" ? "admin" : "user",
     });
     res.status(201).json({ message: "success" });
   } catch (err) {
+    console.log(err);
     res.status(400).send(err);
   }
 });

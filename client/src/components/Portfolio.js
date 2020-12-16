@@ -54,6 +54,13 @@ const financial = (x) => {
   return Number.parseFloat(x).toFixed(2);
 };
 
+const checkIfAmountNegative = (sellAmount, amount) => {
+  if (amount - sellAmount < 0) {
+    return true;
+  }
+  return false;
+};
+
 export default function Portfolio() {
   const classes = useStyles();
   const [cash, setCash] = useState(0);
@@ -69,8 +76,11 @@ export default function Portfolio() {
   const [rows, setRows] = useState([]);
   const [stockSellAmount, setStockSellAmount] = useState(0);
   const [stockForSell, setStockForSell] = useState("");
-  const [ifNegetive, setIfNegetive] = useState(false);
+  const [ifNegative, setIfNegative] = useState(false);
   const [sellPrice, setSellPrice] = useState(0);
+  const [currentAmount, setCurrentAmount] = useState(0);
+  const [error, setError] = useState("");
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -106,8 +116,9 @@ export default function Portfolio() {
         data: { cash },
       } = await network.get("/users/money");
       const { data } = await network.get("/users/investments");
+      console.log(data);
       setCash(cash);
-      setInvestments(financial(data[0].totalCost / 1000));
+      setInvestments(financial(data[0].currentPrice / 100));
     } catch (err) {
       console.error(err);
     }
@@ -116,6 +127,7 @@ export default function Portfolio() {
   const getUserPortfolio = useCallback(async () => {
     try {
       const { data } = await network.get("/users/stocks");
+      console.log(data);
       setRows(data);
     } catch (err) {
       console.error(err);
@@ -158,11 +170,14 @@ export default function Portfolio() {
 
   //remove stock
   const onSellStock = useCallback(async () => {
+    if (currentAmount - Number(stockSellAmount) < 0) {
+      return setError("Can't do short commands");
+    }
     try {
       const obj = {
         symbol: parseFloat(stockForSell),
         amount: Number(stockSellAmount),
-        negetive: ifNegetive,
+        negative: ifNegative,
         price: sellPrice,
       };
       console.log(obj);
@@ -173,17 +188,18 @@ export default function Portfolio() {
     } catch (err) {
       console.error(err);
     }
-  }, [sellPrice, ifNegetive, stockForSell, stockSellAmount]);
+  }, [sellPrice, ifNegative, stockForSell, stockSellAmount, currentAmount]);
 
   const onPressSell = useCallback((value) => {
+    setCurrentAmount(value.currentAmount);
     console.log(value);
     setStockForSell(value.symbol);
     if (value.yield < 0) {
-      setIfNegetive(true);
+      setIfNegative(true);
     } else {
-      setIfNegetive(false);
+      setIfNegative(false);
     }
-    setSellPrice(value["Stock.lastRate"]);
+    setSellPrice(value.lastRate);
     setOpenSell(true);
   }, []);
 
@@ -341,16 +357,16 @@ export default function Portfolio() {
                 rows.map((row) => (
                   <TableRow key={row.title}>
                     <TableCell component="th" scope="row">
-                      {row["Stock.title"]}
+                      {row.title}
                     </TableCell>
                     <TableCell align="right">{row.symbol}</TableCell>
-                    <TableCell align="right">{row["Stock.lastRate"]}</TableCell>
-                    <TableCell align="right">{row.totalAmount}</TableCell>
+                    <TableCell align="right">{row.lastRate}</TableCell>
+                    <TableCell align="right">{row.currentAmount}</TableCell>
                     <TableCell align="right">
                       {financial(row.avgPrice)}
                     </TableCell>
                     <TableCell align="right">
-                      {financial(row.totalCost / 100)}
+                      {financial(row.currentPrice / 100)}
                     </TableCell>
                     <TableCell align="right">
                       {financial(row.change)}%

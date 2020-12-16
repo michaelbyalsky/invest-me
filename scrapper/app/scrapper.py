@@ -4,6 +4,8 @@ headers = {
     'User-Agent': 'My User Agent 1.0',
 }
 
+globes_url = "https://www.globes.co.il/portal/quotes/?showAll=true#jt266"
+main_globes_url = "https://www.bizportal.co.il/realestates/quote/generalview/"
 
 def fetch_data(url):
     try:
@@ -13,11 +15,22 @@ def fetch_data(url):
         print(e)
         return 
 
+def all_stocks():
+    res = fetch_data(globes_url)
+    if not res: 
+        return 
+    parsed_data = parse_data(res.text)
+    table_rows = parsed_data.findAll('tr', class_='data')
+    stocksArray = []
+    for row in table_rows:
+        children = row.findChildren('td')
+        stockData = parse_stock_data(children)
+        stocksArray.append(stockData)
+    return stocksArray
 
 def parse_data(data):
     parsed = BeautifulSoup(data, 'html.parser')
     return parsed
-
 
 def parse_stock_data(childred):
     symbol = childred[1].text
@@ -25,7 +38,6 @@ def parse_stock_data(childred):
     lastRate = float(childred[3].text.replace(',', ''))
     todayChangePrecent = float(childred[5].text[0:-1])
     return {'link': 'https://www.bizportal.co.il/realestates/quote/performance/' + symbol, 'title': title, 'symbol': symbol, 'lastRate': lastRate, 'todayChangePrecent': todayChangePrecent}
-
 
 def parse_one_stock_data(childred):
     stockData = {}
@@ -96,25 +108,6 @@ def parse_one_stock_data(childred):
     return stockData    
     # return { 'current_value': 0, 'last_week': last_week, 'last_month': last_month, 'last_thirty_days': last_thirty_days, 'last_three_month': last_three_month, 'last_six_months': last_six_months, last_nine_months: last_nine_months, last_year: last_year}
 
-
-globes_url = "https://www.globes.co.il/portal/quotes/?showAll=true#jt266"
-main_globes_url = "https://www.bizportal.co.il/realestates/quote/generalview/"
-
-
-def all_stocks():
-    res = fetch_data(globes_url)
-    if not res: 
-        return 
-    parsed_data = parse_data(res.text)
-    table_rows = parsed_data.findAll('tr', class_='data')
-    stocksArray = []
-    for row in table_rows:
-        children = row.findChildren('td')
-        stockData = parse_stock_data(children)
-        stocksArray.append(stockData)
-    return stocksArray
-
-
 def one_stock(path):
     res = fetch_data(path)
     parsedData = parse_data(res.text)
@@ -139,5 +132,3 @@ def one_stock(path):
     stockData['title'] = parsedData.find('span', class_='paper-name').text
     return stockData
 
-# if __name__ == "__main__":
-#     all_stocks()
