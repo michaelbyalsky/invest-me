@@ -5,7 +5,7 @@ module.exports = {
     username: process.env.DB_USERNAME || 'root',
     password: process.env.DB_PASSWORD || null,
     database: process.env.DB_NAME || 'invests',
-    host: process.env.DB_HOST || '172.18.0.1',
+    host: process.env.DB_HOST || '127.0.0.1',
     dialect: 'mysql',
     define: { underscored: true },
     logging: false,
@@ -16,7 +16,7 @@ module.exports = {
     username: process.env.DB_USERNAME || 'root',
     password: process.env.DB_PASSWORD || null,
     database: process.env.DB_TEST || 'invests_test',
-    host: process.env.DB_HOST || '172.18.0.1',
+    host: process.env.DB_HOST || '127.0.0.1',
     dialect: 'mysql',
     define: { underscored: true },
     logging: false,
@@ -25,9 +25,9 @@ module.exports = {
     username: process.env.DB_USERNAME || 'root',
     password: process.env.DB_PASSWORD || null,
     database: process.env.DB_NAME || 'invests_production',
-    host: process.env.DB_HOST || '172.18.0.1',
+    host: process.env.DB_HOST || '127.0.0.1',
     dialect: 'mysql',
     define: { underscored: true },
-
+    
   },
 };

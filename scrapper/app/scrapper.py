@@ -132,3 +132,4 @@ def one_stock(path):
     stockData['title'] = parsedData.find('span', class_='paper-name').text
     return stockData
 
+
