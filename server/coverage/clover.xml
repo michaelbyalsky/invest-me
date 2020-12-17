@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1608237533331" clover="3.2.0">
-  <project timestamp="1608237533332" name="All files">
+<coverage generated="1608239309116" clover="3.2.0">
+  <project timestamp="1608239309116" name="All files">
     <metrics statements="331" coveredstatements="251" conditionals="71" coveredconditionals="39" methods="55" coveredmethods="42" elements="457" coveredelements="332" complexity="0" loc="331" ncloc="331" packages="7" files="23" classes="23"/>
     <package name="server">
       <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -392,8 +392,8 @@
         <line num="3" count="2" type="stmt"/>
         <line num="11" count="2" type="stmt"/>
         <line num="14" count="2" type="stmt"/>
-        <line num="19" count="2" type="stmt"/>
-        <line num="34" count="2" type="stmt"/>
+        <line num="20" count="2" type="stmt"/>
+        <line num="51" count="2" type="stmt"/>
       </file>
     </package>
     <package name="server.tests.mocks">
