@@ -39,6 +39,7 @@ jobs:
           npm install
           npm run ciServer
         env:
+          DB_HOST: "127.0.0.1"
           NODE_ENV: "test"
           DB_TEST: "invests_test"
           ACCESS_TOKEN_SECRET: "sdlkmf4930fjerfdfokvmdsldm1920ejeiockdv950gij54eorjflrf9430r4rjo34plre"
