@@ -14,16 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: mysql:8.0.22
+        image: mysql:5.7
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_HOST: "127.0.0.1"
+          MYSQL_ROOT_PASSWORD: "password"
           MYSQL_DATABASE: invests_test
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       matrix:
-        node-version: [10.19.0]
+        node-version: [10.x]
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -36,10 +37,10 @@ jobs:
         working-directory: ./server
       - name: create and migrate DB, then test
         run: |
-          npm install
-          npm run ciServer
+          npm run init &&
+          npm run migrate &&
+          npm run test
         env:
-          DB_HOST: "127.0.0.1"
           NODE_ENV: "test"
           DB_TEST: "invests_test"
           ACCESS_TOKEN_SECRET: "sdlkmf4930fjerfdfokvmdsldm1920ejeiockdv950gij54eorjflrf9430r4rjo34plre"
