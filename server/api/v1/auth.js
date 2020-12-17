@@ -93,7 +93,7 @@ Router.post("/login", async (req, res, next) => {
           username: result.username,
         },
       });
-      
+
       if (!isTokenExist) {
         await RefreshToken.create({
           username: result.username,
@@ -109,6 +109,7 @@ Router.post("/login", async (req, res, next) => {
           }
         );
       }
+      
       res.cookie("accessToken", token);
       res.cookie("refreshToken", refreshToken);
       res.cookie("username", result.username);
