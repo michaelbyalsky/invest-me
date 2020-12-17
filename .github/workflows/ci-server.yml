@@ -20,7 +20,8 @@ jobs:
           MYSQL_DATABASE: invests_test
         ports:
           - 3306:3306
-        options: --sql-mode="" --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        command: mysqld --sql_mode=""  
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       matrix:
         node-version: [10.x]
