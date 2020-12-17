@@ -32,6 +32,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: change sql mode
+        run: sudo mysqld --sql mode=''    
       - name: Install Server dependencies
         run: npm ci
         working-directory: ./server
