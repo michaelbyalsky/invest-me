@@ -7,7 +7,6 @@
     "@hapi/joi": "^17.1.1",
     "axios": "^0.21.0",
     "bcryptjs": "^2.4.3",
-    "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -17,12 +16,22 @@
     "mysql2": "^2.2.5",
     "sequelize": "^6.3.5"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michaelbyalsky/invest-me.git"
+  },
   "devDependencies": {
     "nodemon": "^2.0.6",
     "sequelize-cli": "^6.2.0",
     "start-server-and-test": "^1.11.6",
     "supertest": "^6.0.1"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "checked-actions-memory.json"
+    ]
+  },
+  "homepage": "https://github.com/michaelbyalsky/invest-me",
   "scripts": {
     "test": "jest --detectOpenHandles --forceExit --runInBand",
     "start": "node server.js",
