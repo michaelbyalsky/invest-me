@@ -54,13 +54,6 @@ const financial = (x) => {
   return Number.parseFloat(x).toFixed(2);
 };
 
-const checkIfAmountNegative = (sellAmount, amount) => {
-  if (amount - sellAmount < 0) {
-    return true;
-  }
-  return false;
-};
-
 export default function Portfolio() {
   const classes = useStyles();
   const [cash, setCash] = useState(0);
@@ -114,8 +107,8 @@ export default function Portfolio() {
     try {
       const {
         data: { cash },
-      } = await network.get("/users/money");
-      const { data } = await network.get("/users/investments");
+      } = await network.get("/transactions/money");
+      const { data } = await network.get("/transactions/investments");
       console.log(data);
       setCash(cash);
       setInvestments(financial(data[0].currentPrice / 100));
@@ -126,7 +119,7 @@ export default function Portfolio() {
 
   const getUserPortfolio = useCallback(async () => {
     try {
-      const { data } = await network.get("/users/stocks");
+      const { data } = await network.get("/transactions");
       console.log(data);
       setRows(data);
     } catch (err) {
@@ -141,10 +134,10 @@ export default function Portfolio() {
     try {
       const obj = {
         symbol: stockToUpdate,
-        price: price,
-        amount: Number(amount),
+        buyPrice: price,
+        buyAmount: Number(amount),
       };
-      const { data } = await network.post("/users/stocks", obj);
+      const { data } = await network.post("/transactions", obj);
       getUserPortfolio();
       setStockToUpdate("");
       setPrice("");
@@ -176,12 +169,12 @@ export default function Portfolio() {
     try {
       const obj = {
         symbol: parseFloat(stockForSell),
-        amount: Number(stockSellAmount),
+        sellAmount: Number(stockSellAmount),
         negative: ifNegative,
-        price: sellPrice,
+        sellPrice: sellPrice,
       };
       console.log(obj);
-      const { data } = await network.patch("/users/stocks", obj);
+      const { data } = await network.patch("/transactions", obj);
       setStockForSell("");
       setStockSellAmount(0);
       getUserPortfolio();
