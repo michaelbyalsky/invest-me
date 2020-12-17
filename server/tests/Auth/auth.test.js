@@ -1,10 +1,9 @@
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const app = require("../../../app");
-const mockUser = require("../../mocks/users");
-const { User, RefreshToken } = require("../../../models");
-const usersArray = mockUser.slice(-2, -1);
+const app = require("../../app");
+const {mockUser, loginUsers} = require("./usersMock");
+const { User, RefreshToken } = require("../../models");
 
 function generateToken(currentUser) {
   const infoForCookie = {
@@ -18,9 +17,10 @@ function generateToken(currentUser) {
 
 describe("Register & Login Tests", () => {
   beforeAll(async () => {
+    const copyUser = mockUser[0]
     await User.destroy({ truncate: true, force: true });
-    mockUser[0].password = await bcrypt.hashSync(mockUser[0].password, 10);
-    await User.create(mockUser[0]);
+    copyUser.password = await bcrypt.hashSync(copyUser.password, 10);
+    await User.create(copyUser);
   });
 
   afterAll(async () => {
@@ -52,6 +52,35 @@ describe("Register & Login Tests", () => {
       .send(mockUser[3]);
 
     expect(createUserResponse.status).toBe(400);
+    done();
+  });
+
+  test('User Can Login With Correct Details', async (done) => {
+    const invalidLoginResponse = await request(app)
+      .post('/api/v1/auth/login')
+      .send({ email: 'supposed@gmail.com', password: 'toFail123' });
+    expect(invalidLoginResponse.status).toBe(403);
+
+    const loginResponse = await request(app)
+      .post('/api/v1/auth/login')
+      .send(loginUsers[0]);
+
+    expect(loginResponse.status).toBe(200);
+    console.log(loginResponse.headers['set-cookie']);
+    expect(loginResponse.headers['set-cookie'][0].split("=")[0]).toBe('accessToken');
+    expect(loginResponse.headers['set-cookie'][1].split("=")[0]).toBe('refreshToken');
+
+    const refreshTokenInDB = loginResponse.headers['set-cookie'][1].split('=')[1].split(';')[0];
+    const validRefreshTokenInDB = await RefreshToken.findOne({
+      where: {
+        token: refreshTokenInDB,
+      },
+    });
+    expect(validRefreshTokenInDB.username).toBe(mockUser[0].username);
+    expect(loginResponse.body.success).toBe(
+      true,
+    );
+
     done();
   });
 });

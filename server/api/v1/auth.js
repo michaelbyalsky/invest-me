@@ -25,7 +25,6 @@ Router.post("/logout", async (req, res) => {
   }
 });
 
-
 Router.post("/token", async (req, res) => {
   try {
     const refreshToken = req.body.token;
@@ -59,7 +58,6 @@ Router.post("/token", async (req, res) => {
 
 Router.post("/login", async (req, res, next) => {
   try {
-    console.log(req.body);
     const validation = loginValidation(req.body);
     if (validation.error) {
       return res.status(400).json(validation.error.details[0].message);
@@ -70,7 +68,7 @@ Router.post("/login", async (req, res, next) => {
       },
     });
     if (count === 0) {
-      res.status(400).send({ message: "email not exists" });
+      return res.status(403).send({ message: "email not exists" });
     }
     const result = await User.findOne({
       attributes: ["id", "username", "email", "password"],
@@ -80,11 +78,9 @@ Router.post("/login", async (req, res, next) => {
       raw: true,
       nest: true,
     });
-    console.log(req.body.password);
-    console.log(result.password);
     const validPass = await bcrypt.compare(req.body.password, result.password);
     if (!validPass) {
-      return res.status(400).json({ message: "invalidPassword" });
+      return res.status(403).json({ message: "invalidPassword" });
     } else {
       const infoForToken = { id: result.id, username: result.username };
       const token = generateToken(infoForToken);
@@ -92,7 +88,6 @@ Router.post("/login", async (req, res, next) => {
         { id: result.id, username: result.username },
         process.env.REFRESH_TOKEN_SECRET
       );
-      console.log(result.username);
       const isTokenExist = await RefreshToken.findOne({
         where: {
           username: result.username,
@@ -124,27 +119,6 @@ Router.post("/login", async (req, res, next) => {
     res.status(400).json(err);
   }
 });
-
-// authRouter.post('/logout', async (req, res) => {
-//     try {
-//       // Joi Validation
-//       const { error } = tokenValidation(req.body);
-//       if (error) {
-//         console.error(error.message);
-//         return res.status(400).json({ success: false, message: "Don't mess with me" });
-//       }
-//       const result = await RefreshToken.destroy({
-//         where: {
-//           token: req.body.token,
-//         },
-//       });
-//       if (!result) return res.status(400).json({ message: 'Refresh Token is required' });
-//       res.json({ message: 'User Logged Out Successfully' });
-//     } catch (error) {
-//       console.error(error.message);
-//       res.status(400).json({ message: 'Cannot process request' });
-//     }
-//   });
 
 Router.post("/register", async (req, res, next) => {
   try {
