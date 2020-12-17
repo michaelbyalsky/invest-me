@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0.17
         env:
-          MYSQL_HOST: "127.0.0.1"
-          MYSQL_ROOT_PASSWORD: "password"
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: invests_test
         ports:
           - 3306:3306
+        command: mysqld --sql_mode=""  
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       matrix:
@@ -37,12 +37,15 @@ jobs:
         working-directory: ./server
       - name: create and migrate DB, then test
         run: |
-          npm run init &&
+          npm run initDB &&
           npm run migrate &&
-          npm run test
+          npm run testCoverage
         env:
           NODE_ENV: "test"
+          DB_USERNAME: "root"
+          DB_PASSWORD: null
           DB_TEST: "invests_test"
+          DB_HOST: "127.0.0.1"
           ACCESS_TOKEN_SECRET: "sdlkmf4930fjerfdfokvmdsldm1920ejeiockdv950gij54eorjflrf9430r4rjo34plre"
           REFRESH_TOKEN_SECRET: "dfgklfmg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf5822"
         working-directory: ./server

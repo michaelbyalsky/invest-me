@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
       });
       this.belongsTo(models.Stock, {
-        foreignKey: "symbol", targetKey: "symbol"
+        foreignKey: "symbol",
+        targetKey: "symbol",
       });
     }
   }
@@ -20,10 +21,26 @@ module.exports = (sequelize, DataTypes) => {
     {
       userId: DataTypes.STRING,
       symbol: DataTypes.INTEGER,
-      buy_price: DataTypes.FLOAT,
-      sell_price: DataTypes.FLOAT,
-      buy_amount: DataTypes.INTEGER,
-      sell_amount: DataTypes.INTEGER,
+      buyPrice: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      sellPrice: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      buyAmount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      sellAmount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       operation: DataTypes.ENUM("buy", "sell"),
     },
     {
