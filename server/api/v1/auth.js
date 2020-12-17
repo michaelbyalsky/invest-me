@@ -93,6 +93,7 @@ Router.post("/login", async (req, res, next) => {
           username: result.username,
         },
       });
+      
       if (!isTokenExist) {
         await RefreshToken.create({
           username: result.username,
