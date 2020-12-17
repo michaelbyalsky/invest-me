@@ -25,6 +25,7 @@ module.exports = {
         defaultValue: 0,
         allowNull: false,
       },
+      
       buy_price: {
         type: Sequelize.FLOAT,
         defaultValue: 0,
