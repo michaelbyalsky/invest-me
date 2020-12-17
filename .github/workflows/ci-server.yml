@@ -16,6 +16,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
+          MYSQL_ROOT_HOST: % 
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: invests_test
         ports:
