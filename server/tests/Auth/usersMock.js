@@ -1,4 +1,4 @@
-module.exports = [
+const mockUser = [
   {
     firstName: "michael",
     lastName: "byalsky",
@@ -33,3 +33,11 @@ module.exports = [
     birthDate: new Date("04/01/1946"),
   },
 ];
+
+const loginUsers = [
+  { email: "michaelbyalsky@gmail.com", password: "123456" },
+  { email: "warren1@gmail.com", password: "123456" },
+];
+
+module.exports.mockUser = mockUser
+module.exports.loginUsers = loginUsers;
