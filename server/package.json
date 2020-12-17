@@ -44,7 +44,8 @@
     "restart": "npm run drop && npm run initDB && npm run migrate && npm run seed",
     "restartTest": "NODE_ENV=test npm run restart",
     "restartAll": "npm run restart && npm run restartTest",
-    "ciServer": "npm run initDB && npm run migrate && npm run test"
+    "ciServer": "npm run initDB && npm run migrate && npm run test",
+    "testCoverage": "npx jest --coverage --detectOpenHandles --forceExit --runInBand"
   },
   "keywords": [],
   "author": "",
