@@ -16,8 +16,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_HOST: "172.18.0.1"
-          MYSQL_ROOT_PASSWORD: "password"
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: invests_test
         ports:
           - 3306:3306
@@ -37,7 +36,7 @@ jobs:
         working-directory: ./server
       - name: create and migrate DB, then test
         run: |
-          npm run init &&
+          npm run initDB &&
           npm run migrate &&
           npm run test
         env:
