@@ -38,7 +38,7 @@ jobs:
         run: |
           npm run initDB &&
           npm run migrate &&
-          npm run testCoverage
+          npm run test
         env:
           NODE_ENV: "test"
           DB_USERNAME: "root"
