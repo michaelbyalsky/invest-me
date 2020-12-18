@@ -37,7 +37,7 @@ Router.get("/investments", async (req, res) => {
       sum(buy_amount * buy_price) - sum(sell_amount * sell_price) as currentPrice 
       FROM user_stocks
       where user_id = '${req.user.id}'
-      GROUP BY user_id      
+      GROUP BY userId      
         `,
       { type: QueryTypes.SELECT }
     );
@@ -50,7 +50,7 @@ Router.get("/investments", async (req, res) => {
 Router.get("/all-users-profit", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
-      `SELECT users.username, user_stocks.user_id as userId,
+      `SELECT users.username as username, user_stocks.user_id as userId,
       SUM(stocks.last_rate  * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalCurrentPrice,
       SUM(((user_stocks.buy_amount * user_stocks.buy_price) - (user_stocks.sell_amount * user_stocks.sell_price)) / 
       ((user_stocks.buy_amount) - (user_stocks.sell_amount)) * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalBuyingPrice,
@@ -59,7 +59,7 @@ Router.get("/all-users-profit", async (req, res) => {
       FROM user_stocks
       JOIN stocks on stocks.symbol = user_stocks.symbol
       JOIN users on users.id = user_stocks.user_id
-      GROUP by user_stocks.user_id
+      GROUP BY username, userId
       `,
       { type: QueryTypes.SELECT }
     );
@@ -85,7 +85,7 @@ Router.get("/all-users-profit", async (req, res) => {
 Router.get("/user-profit", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
-      `SELECT users.username, user_stocks.user_id as userId,
+      `SELECT users.username as username, user_stocks.user_id as userId,
       SUM(stocks.last_rate  * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalCurrentPrice,
       SUM(((user_stocks.buy_amount * user_stocks.buy_price) - (user_stocks.sell_amount * user_stocks.sell_price)) / 
       ((user_stocks.buy_amount) - (user_stocks.sell_amount)) * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalBuyingPrice,
@@ -95,7 +95,7 @@ Router.get("/user-profit", async (req, res) => {
       JOIN stocks on stocks.symbol = user_stocks.symbol
       JOIN users on users.id = user_stocks.user_id
       WHERE user_id = '${req.user.id}'
-      GROUP by user_stocks.user_id
+      GROUP by userId, username
       `,
       { type: QueryTypes.SELECT }
     );
@@ -128,7 +128,7 @@ Router.get("/", async (req, res) => {
       FROM user_stocks
       JOIN stocks on stocks.symbol = user_stocks.symbol
       where user_id = '${req.user.id}'
-      GROUP by user_stocks.symbol, user_stocks.user_id
+      GROUP by symbol, userId, title, lastRate
     `,
       { type: QueryTypes.SELECT }
     );
