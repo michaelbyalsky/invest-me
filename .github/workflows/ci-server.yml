@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Change sql mode
-        run: sudo mysqld --sql-mode=''                                                             
+        run: mysqld --user=root --sql-mode=''                                                             
       - name: Install Server dependencies
         run: npm ci
         working-directory: ./server
