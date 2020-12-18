@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Change sql mode
-        run: echo "SET GLOBAL sql_mode =''" | mysql --user=root                                                                
+        run: mysqld --sql-mode=''                                                             
       - name: Install Server dependencies
         run: npm ci
         working-directory: ./server
