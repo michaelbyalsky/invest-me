@@ -45,9 +45,22 @@ Router.get("/search", async (req, res) => {
   }
 });
 
-Router.get("/all", async (req, res) => {
+Router.post("/all", async (req, res) => {
   try {
-    const data = await BigStockData.findAll({});
+    console.log(req.body);
+    const customAttributes = req.body;
+    let data;
+    if (customAttributes.length > 0) {
+      data = await BigStockData.findAll({
+        attributes: ["id","title", "symbol", "currentRate", ...customAttributes],
+      });
+    } else {
+      data = await BigStockData.findAll({
+        attributes: {
+          exclude: ["createdAt, updatedAt"],
+        },
+      });
+    }
     res.json(data);
   } catch (err) {
     console.log(err);
@@ -66,15 +79,17 @@ Router.get("/all-regular", async (req, res) => {
 Router.get("/periods", async (req, res) => {
   try {
     const data = Object.keys(BigStockData.rawAttributes);
-    const filtered = data.filter(
-      (key) =>
-        key !== "id" &&
-        key !== "createdAt" &&
-        key !== "updatedAt" &&
-        key !== "title" &&
-        key !== "symbol" &&
-        key !== "currentRate"
-    );
+    const filtered = data
+      .filter(
+        (key) =>
+          key !== "id" &&
+          key !== "createdAt" &&
+          key !== "updatedAt" &&
+          key !== "title" &&
+          key !== "symbol" &&
+          key !== "currentRate"
+      )
+      .map((key) => ({ label: key, value: key }));
     res.json(filtered);
   } catch (err) {
     console.log(err);

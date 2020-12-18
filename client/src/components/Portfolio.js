@@ -38,18 +38,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// function createData(name, calories, fat, carbs, protein) {
-//   return { name, calories, fat, carbs, protein };
-// }
-
-// const rows = [
-//   createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-//   createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-//   createData("Eclair", 262, 16.0, 24, 6.0),
-//   createData("Cupcake", 305, 3.7, 67, 4.3),
-//   createData("Gingerbread", 356, 16.0, 49, 3.9),
-// ];
-
 const financial = (x) => {
   return Number.parseFloat(x).toFixed(2);
 };
@@ -184,6 +172,7 @@ export default function Portfolio() {
   }, [sellPrice, ifNegative, stockForSell, stockSellAmount, currentAmount]);
 
   const onPressSell = useCallback((value) => {
+    
     setCurrentAmount(value.currentAmount);
     console.log(value);
     setStockForSell(value.symbol);
@@ -192,7 +181,6 @@ export default function Portfolio() {
     } else {
       setIfNegative(false);
     }
-    setSellPrice(value.lastRate);
     setOpenSell(true);
   }, []);
 
@@ -254,7 +242,17 @@ export default function Portfolio() {
             <DialogContentText>
               Add new stock to your stock portfolio
             </DialogContentText>
-
+            <TextField
+              label="price"
+              id="outlined-margin-dense"
+              value={sellPrice}
+              className={classes.textField}
+              helperText="stock sell amount"
+              margin="dense"
+              variant="outlined"
+              type="number"
+              onChange={(e) => setSellPrice(e.target.value)}
+            />
             <TextField
               label="amount"
               id="outlined-margin-dense"
@@ -341,7 +339,8 @@ export default function Portfolio() {
                 <TableCell align="right">Last rate</TableCell>
                 <TableCell align="right">Amount</TableCell>
                 <TableCell align="right">AVG b.price</TableCell>
-                <TableCell align="right">Total value shekel</TableCell>
+                <TableCell align="right">Total value <img height="15px" width="15px" src="https://img.icons8.com/material-outlined/24/000000/shekel.png"/></TableCell>
+                <TableCell align="right">Profit <img height="15px" width="15px" src="https://img.icons8.com/material-outlined/24/000000/shekel.png"/></TableCell>
                 <TableCell align="right">Yield</TableCell>
               </TableRow>
             </TableHead>
@@ -355,12 +354,14 @@ export default function Portfolio() {
                     <TableCell align="right">{row.symbol}</TableCell>
                     <TableCell align="right">{row.lastRate}</TableCell>
                     <TableCell align="right">{row.currentAmount}</TableCell>
+                    
                     <TableCell align="right">
                       {financial(row.avgPrice)}
                     </TableCell>
                     <TableCell align="right">
                       {financial(row.currentPrice / 100)}
                     </TableCell>
+                <TableCell align="right">{financial(row.profitInShekels)}</TableCell>
                     <TableCell align="right">
                       {financial(row.change)}%
                     </TableCell>

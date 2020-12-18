@@ -2,20 +2,57 @@ import { DataGrid } from "@material-ui/data-grid";
 import React, { useState, useCallback, useEffect } from "react";
 import network from "../network/index";
 import _ from "lodash";
+import { makeStyles } from "@material-ui/core/styles";
+import Select from "react-select";
+
+const useStyles = makeStyles((theme) => ({
+  root: {},
+  control: {
+    padding: "2px",
+    marginBottom: "1fr",
+  },
+  dataGrid: { height: 600, width: "100%" },
+}));
 
 export default function BigDataList() {
   const [bigData, setBigData] = useState();
   const [columns, setColumns] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [selectValues, setSelectValues] = useState(null);
+  const classes = useStyles();
+
+  const handleClickOpen = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const handleSelectChange = useCallback((e) => {
+    setSelectValues(Array.isArray(e) ? e.map((x) => x.value) : []);
+  }, []);
+
+  const fetchOptions = useCallback(async () => {
+    try {
+      const { data } = await network.get("/stocks/periods");
+      setOptions(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   const fetchBigDataList = useCallback(async () => {
     try {
-      const { data } = await network.get("/stocks/all");
+      const { data } = await network.post("/stocks/all", selectValues);
       const oneStock = data[0];
       const oneStockValues = Object.values(oneStock);
       const resColumns = Object.keys(oneStock).map((key, i) => {
         return {
           field: key,
           headerName: _.startCase(key),
-          width: 130
+          width: 130,
         };
       });
       setColumns(resColumns);
@@ -23,22 +60,39 @@ export default function BigDataList() {
     } catch (err) {
       console.error(err);
     }
+  }, [selectValues]);
+
+  useEffect(() => {
+    fetchOptions();
+    fetchBigDataList();
   }, []);
 
   useEffect(() => {
     fetchBigDataList();
-  }, []);
+  }, [selectValues]);
 
   return (
-    <div style={{ height: 600, width: "100%" }}>
-    {bigData && columns &&
-      <DataGrid
-        rows={bigData}
-        columns={columns}
-        pageSize={20}
-        checkboxSelection
-      />
-    }
+    <div className={classes.root}>
+      <div className={classes.control}>
+        <Select
+          isMulti
+          name="colors"
+          options={options}
+          onChange={handleSelectChange}
+          className="basic-multi-select"
+          classNamePrefix="select"
+        />
+      </div>
+      <div className={classes.dataGrid}>
+        {bigData && columns && (
+          <DataGrid
+            rows={bigData}
+            columns={columns}
+            pageSize={20}
+            checkboxSelection
+          />
+        )}
+      </div>
     </div>
   );
 }

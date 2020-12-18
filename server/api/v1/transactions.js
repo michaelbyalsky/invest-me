@@ -132,12 +132,15 @@ Router.get("/", async (req, res) => {
     `,
       { type: QueryTypes.SELECT }
     );
-
-    user.forEach((stock) => {
+    const filtered = user.filter((stock) => stock.currentAmount > 0);
+    if (filtered.length === 0) {
+      return res.json(filtered);
+    }
+    filtered.forEach((stock) => {
       stock.currentAmount = Number(stock.currentAmount);
       stock.userId = Number(stock.userId);
     });
-    const mapped = user.map((obj) => ({
+    const mapped = filtered.map((obj) => ({
       ...obj,
       change: (obj.lastRate / obj.avgPrice) * 100 - 100,
       profitInShekels: (obj.currentPrice - obj.buyingPrice) / 100,
@@ -214,6 +217,7 @@ Router.patch("/", async (req, res) => {
       sellAmount: req.body.sellAmount,
       operation: "sell",
     };
+
     await UserStock.create(obj);
 
     // 0.25 tax fee

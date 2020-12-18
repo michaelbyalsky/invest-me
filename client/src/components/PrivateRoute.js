@@ -20,6 +20,11 @@ export default function PrivateRoute({ component: Component, ...rest }) {
         username: Cookies.get("username"),
       });
     } else {
+      Cookies.remove('accessToken')
+      Cookies.remove('refreshToken')
+      Cookies.remove('userId');
+      Cookies.remove('username');
+      Cookies.remove('rememberMe');
       history.push("/login");
     }
   }, []);
