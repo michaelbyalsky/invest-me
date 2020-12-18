@@ -18,6 +18,7 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: invests_test
+          MYSQL_MODE: ''
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3  
@@ -31,8 +32,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Change sql mode
-        run: mysqld --user=root --sql-mode=''                                                             
+      # - name: Change sql mode
+      #   run: mysqld --user=mysql --sql-mode=''                                                             
       - name: Install Server dependencies
         run: npm ci
         working-directory: ./server
