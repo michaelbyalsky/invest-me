@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Change sql mode
-        run: sudoedit /etc/mysql/my.cnf.fallback
+        run: sql_mode=""                                                               
       - name: Install Server dependencies
         run: npm ci
         working-directory: ./server
