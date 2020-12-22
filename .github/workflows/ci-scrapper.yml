@@ -22,7 +22,7 @@ jobs:
         working-directory: ./scrapper
         run: |
           pip install pipenv
-          pipenv install --deploy --dev
+          pipenv --python python3.7
 
       - run: pipenv run isort --recursive --diff
       - run: pipenv run black --check .
