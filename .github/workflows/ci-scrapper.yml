@@ -24,4 +24,4 @@ jobs:
           pip install -r requirements.txt
           pip install pipenv
           pipenv --python python3.7
-      - run: pipenv run pytest 
+      - run: pipenv run pytest ./app/test.py
