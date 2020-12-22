@@ -12,7 +12,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      working-directory: ./scrapper
       - uses: actions/checkout@v2
 
       - name: Setup Python
@@ -21,6 +20,7 @@ jobs:
           python-version: 3.7
 
       - name: Install dependencies with pipenv
+        working-directory: ./scrapper
         run: |
           pip install pipenv
           pipenv install --deploy --dev
