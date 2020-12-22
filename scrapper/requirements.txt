@@ -4,4 +4,5 @@ pytest
 uvicorn
 bs4
 requests
-
+flake8
+mypy

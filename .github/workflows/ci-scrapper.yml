@@ -21,6 +21,7 @@ jobs:
       - name: Install dependencies with pipenv
         working-directory: ./scrapper
         run: |
+          pip install -r requirements.txt
           pip install pipenv
           pipenv --python python3.7
       - run: pipenv run flake8
