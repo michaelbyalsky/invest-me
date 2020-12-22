@@ -66,7 +66,7 @@ const Calculator = () => {
   }, []);
 
   const loadingStockOptions = useCallback(async () => {
-    if (!query) {
+    if (query === null) {
       return;
     }
     try {
@@ -82,9 +82,9 @@ const Calculator = () => {
   }, [query]);
 
   const loadingPeriodOptions = useCallback(async () => {
-    // if (!stockLink) {
-    //   return;
-    // }
+    if (!stockLink) {
+      return;
+    }
     try {
       const { data } = await network.get(
         `stocks/one-stock-data?q=${stockLink}`

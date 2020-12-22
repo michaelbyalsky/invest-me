@@ -76,6 +76,7 @@ function Login() {
     let body = {
       email: email,
       password: password,
+      rememberMe: rememberMe  
     };
     try {
       const { data } = await network.post("/auth/login", body);
@@ -91,7 +92,6 @@ function Login() {
         id: Cookies.get("userId"),
         username: Cookies.get("username"),
       });
-      console.log("asdasdsa");
       history.push("/");
     } catch (err) {
       console.log(err);

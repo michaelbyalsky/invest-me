@@ -14,12 +14,17 @@ export default function PrivateRoute({ component: Component, ...rest }) {
   useEffect(() => {
     let rememberMeValue = Cookies.get("rememberMe");
     let token = Cookies.get("accessToken");
-    if (token) {
+    if (token && rememberMeValue) {
       setCurrentUser({
         id: Cookies.get("userId"),
         username: Cookies.get("username"),
       });
     } else {
+      Cookies.remove('accessToken')
+      Cookies.remove('refreshToken')
+      Cookies.remove('userId');
+      Cookies.remove('username');
+      Cookies.remove('rememberMe');
       history.push("/login");
     }
   }, []);

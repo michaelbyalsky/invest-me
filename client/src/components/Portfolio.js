@@ -1,13 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -15,9 +8,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import network from "../network/index";
-import { useRecoilState } from "recoil";
-import { stocksArrayState } from "../recoil/Atom";
 import AsyncSelect from "react-select/async";
+import Typography from "@material-ui/core/Typography";
+import StocksTable from "./StocksTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,18 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// function createData(name, calories, fat, carbs, protein) {
-//   return { name, calories, fat, carbs, protein };
-// }
-
-// const rows = [
-//   createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-//   createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-//   createData("Eclair", 262, 16.0, 24, 6.0),
-//   createData("Cupcake", 305, 3.7, 67, 4.3),
-//   createData("Gingerbread", 356, 16.0, 49, 3.9),
-// ];
-
 const financial = (x) => {
   return Number.parseFloat(x).toFixed(2);
 };
@@ -60,7 +41,6 @@ export default function Portfolio() {
   const [investments, setInvestments] = useState(0);
   const [open, setOpen] = useState(false);
   const [openSell, setOpenSell] = useState(false);
-  const [stocksArray, setStocksArray] = useRecoilState(stocksArrayState);
   const [query, setQuery] = useState("");
   const [stockToUpdate, setStockToUpdate] = useState(null);
   const [amount, setAmount] = useState(0);
@@ -73,6 +53,8 @@ export default function Portfolio() {
   const [sellPrice, setSellPrice] = useState(0);
   const [currentAmount, setCurrentAmount] = useState(0);
   const [error, setError] = useState("");
+  const [buyError, setBuyError] = useState("");
+  const [sellError, setSellError] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -129,6 +111,10 @@ export default function Portfolio() {
 
   const onAddStock = useCallback(async () => {
     if (Number(amount) <= 0) {
+      setBuyError("amount error");
+      setTimeout(() => {
+        setBuyError("");
+      }, 3000);
       return;
     }
     try {
@@ -164,7 +150,11 @@ export default function Portfolio() {
   //remove stock
   const onSellStock = useCallback(async () => {
     if (currentAmount - Number(stockSellAmount) < 0) {
-      return setError("Can't do short commands");
+      setSellError("Amount error");
+      setTimeout(() => {
+        setSellError("");
+      }, 3000);
+      return;
     }
     try {
       const obj = {
@@ -192,7 +182,6 @@ export default function Portfolio() {
     } else {
       setIfNegative(false);
     }
-    setSellPrice(value.lastRate);
     setOpenSell(true);
   }, []);
 
@@ -248,13 +237,21 @@ export default function Portfolio() {
           aria-labelledby="draggable-dialog-title"
         >
           <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
-            Add stock
+            sell stock
           </DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Add new stock to your stock portfolio
-            </DialogContentText>
-
+            <DialogContentText>{sellError}</DialogContentText>
+            <TextField
+              label="price"
+              id="outlined-margin-dense"
+              value={sellPrice}
+              className={classes.textField}
+              helperText="stock sell amount"
+              margin="dense"
+              variant="outlined"
+              type="number"
+              onChange={(e) => setSellPrice(e.target.value)}
+            />
             <TextField
               label="amount"
               id="outlined-margin-dense"
@@ -323,6 +320,7 @@ export default function Portfolio() {
               onChange={(e) => setPrice(e.target.value)}
             />
           </DialogContent>
+          <Typography variant="outlined">{buyError}</Typography>
           <DialogActions>
             <Button autoFocus onClick={handleClose} color="primary">
               Cancel
@@ -332,44 +330,7 @@ export default function Portfolio() {
             </Button>
           </DialogActions>
         </Dialog>
-        <TableContainer component={Paper}>
-          <Table className={classes.table} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Stock</TableCell>
-                <TableCell align="right">Symbol</TableCell>
-                <TableCell align="right">Last rate</TableCell>
-                <TableCell align="right">Amount</TableCell>
-                <TableCell align="right">AVG b.price</TableCell>
-                <TableCell align="right">Total value shekel</TableCell>
-                <TableCell align="right">Yield</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.length !== 0 &&
-                rows.map((row) => (
-                  <TableRow key={row.title}>
-                    <TableCell component="th" scope="row">
-                      {row.title}
-                    </TableCell>
-                    <TableCell align="right">{row.symbol}</TableCell>
-                    <TableCell align="right">{row.lastRate}</TableCell>
-                    <TableCell align="right">{row.currentAmount}</TableCell>
-                    <TableCell align="right">
-                      {financial(row.avgPrice)}
-                    </TableCell>
-                    <TableCell align="right">
-                      {financial(row.currentPrice / 100)}
-                    </TableCell>
-                    <TableCell align="right">
-                      {financial(row.change)}%
-                    </TableCell>
-                    <button onClick={() => onPressSell(row)}>delete</button>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <StocksTable tableRows={rows} onPressSell={onPressSell} />
       </div>
     </div>
   );

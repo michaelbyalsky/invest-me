@@ -3,6 +3,7 @@ const { User, UserMoney, UserStock, Stock } = require("../../models");
 const bcrypt = require("bcryptjs");
 const sequelize = require("sequelize");
 const { QueryTypes } = require("sequelize");
+const _ = require("lodash");
 
 Router.get("/money", async (req, res) => {
   try {
@@ -37,7 +38,7 @@ Router.get("/investments", async (req, res) => {
       sum(buy_amount * buy_price) - sum(sell_amount * sell_price) as currentPrice 
       FROM user_stocks
       where user_id = '${req.user.id}'
-      GROUP BY user_id      
+      GROUP BY userId      
         `,
       { type: QueryTypes.SELECT }
     );
@@ -50,7 +51,7 @@ Router.get("/investments", async (req, res) => {
 Router.get("/all-users-profit", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
-      `SELECT users.username, user_stocks.user_id as userId,
+      `SELECT users.username as username, user_stocks.user_id as userId,
       SUM(stocks.last_rate  * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalCurrentPrice,
       SUM(((user_stocks.buy_amount * user_stocks.buy_price) - (user_stocks.sell_amount * user_stocks.sell_price)) / 
       ((user_stocks.buy_amount) - (user_stocks.sell_amount)) * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalBuyingPrice,
@@ -59,7 +60,7 @@ Router.get("/all-users-profit", async (req, res) => {
       FROM user_stocks
       JOIN stocks on stocks.symbol = user_stocks.symbol
       JOIN users on users.id = user_stocks.user_id
-      GROUP by user_stocks.user_id
+      GROUP BY username, userId
       `,
       { type: QueryTypes.SELECT }
     );
@@ -85,7 +86,7 @@ Router.get("/all-users-profit", async (req, res) => {
 Router.get("/user-profit", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
-      `SELECT users.username, user_stocks.user_id as userId,
+      `SELECT users.username as username, user_stocks.user_id as userId,
       SUM(stocks.last_rate  * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalCurrentPrice,
       SUM(((user_stocks.buy_amount * user_stocks.buy_price) - (user_stocks.sell_amount * user_stocks.sell_price)) / 
       ((user_stocks.buy_amount) - (user_stocks.sell_amount)) * ((user_stocks.buy_amount) - (user_stocks.sell_amount)) / 100) as totalBuyingPrice,
@@ -95,7 +96,7 @@ Router.get("/user-profit", async (req, res) => {
       JOIN stocks on stocks.symbol = user_stocks.symbol
       JOIN users on users.id = user_stocks.user_id
       WHERE user_id = '${req.user.id}'
-      GROUP by user_stocks.user_id
+      GROUP by userId, username
       `,
       { type: QueryTypes.SELECT }
     );
@@ -128,21 +129,62 @@ Router.get("/", async (req, res) => {
       FROM user_stocks
       JOIN stocks on stocks.symbol = user_stocks.symbol
       where user_id = '${req.user.id}'
-      GROUP by user_stocks.symbol, user_stocks.user_id
+      GROUP by symbol, userId, title, lastRate
     `,
       { type: QueryTypes.SELECT }
     );
-
-    user.forEach((stock) => {
+    const filtered = user.filter((stock) => stock.currentAmount > 0);
+    if (filtered.length === 0) {
+      return res.json(filtered);
+    }
+    filtered.forEach((stock) => {
       stock.currentAmount = Number(stock.currentAmount);
       stock.userId = Number(stock.userId);
     });
-    const mapped = user.map((obj) => ({
+    const mapped = filtered.map((obj) => ({
       ...obj,
       change: (obj.lastRate / obj.avgPrice) * 100 - 100,
       profitInShekels: (obj.currentPrice - obj.buyingPrice) / 100,
     }));
     res.json(mapped);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+Router.get("/all-portfolios", async (req, res) => {
+  try {
+    const user = await UserStock.sequelize.query(
+      `SELECT users.username as username, stocks.title as title, stocks.last_rate as lastRate, 
+      user_stocks.symbol as symbol, user_stocks.user_id as userId,
+      stocks.last_rate  * (SUM(user_stocks.buy_amount) - sum(user_stocks.sell_amount)) as currentPrice, 
+      SUM(user_stocks.buy_amount) - sum(user_stocks.sell_amount) as currentAmount,
+      (sum(user_stocks.buy_amount * user_stocks.buy_price) - sum(user_stocks.sell_amount * user_stocks.sell_price)) / 
+      (SUM(user_stocks.buy_amount) - sum(user_stocks.sell_amount)) as avgPrice,
+      (sum(user_stocks.buy_amount * user_stocks.buy_price) - sum(user_stocks.sell_amount * user_stocks.sell_price)) / 
+      (SUM(user_stocks.buy_amount) - sum(user_stocks.sell_amount)) * (SUM(user_stocks.buy_amount) - sum(user_stocks.sell_amount)) as buyingPrice
+      FROM user_stocks
+      JOIN stocks on stocks.symbol = user_stocks.symbol
+      JOIN users on users.id = user_stocks.user_id
+      GROUP by symbol, userId, title, lastRate, username
+    `,
+      { type: QueryTypes.SELECT }
+    );
+    const filtered = user.filter((stock) => stock.currentAmount > 0);
+    if (filtered.length === 0) {
+      return res.json(filtered);
+    }
+    filtered.forEach((stock) => {
+      stock.currentAmount = Number(stock.currentAmount);
+      stock.userId = Number(stock.userId);
+    });
+    const mapped = filtered.map((obj) => ({
+      ...obj,
+      change: (obj.lastRate / obj.avgPrice) * 100 - 100,
+      profitInShekels: (obj.currentPrice - obj.buyingPrice) / 100,
+    }));
+    const grouped = _.groupBy(mapped, "username");
+    res.json(grouped);
   } catch (err) {
     console.error(err);
   }
@@ -214,6 +256,7 @@ Router.patch("/", async (req, res) => {
       sellAmount: req.body.sellAmount,
       operation: "sell",
     };
+
     await UserStock.create(obj);
 
     // 0.25 tax fee

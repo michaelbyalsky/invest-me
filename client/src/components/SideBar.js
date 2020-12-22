@@ -50,8 +50,8 @@ const SideBar = ({
       icon: <WorkIcon />,
     },
     {
-      path: "/compatition",
-      title: "compatition",
+      path: "/competition",
+      title: "competition",
       icon: <GroupIcon />,
     },
     {

@@ -5,7 +5,6 @@ headers = {
 }
 
 globes_url = "https://www.globes.co.il/portal/quotes/?showAll=true#jt266"
-main_globes_url = "https://www.bizportal.co.il/realestates/quote/generalview/"
 
 def fetch_data(url):
     try:
@@ -110,7 +109,11 @@ def parse_one_stock_data(childred):
 
 def one_stock(path):
     res = fetch_data(path)
-    parsedData = parse_data(res.text)
+    try:    
+        parsedData = parse_data(res.text)
+    except Exception as e:
+        print(e)
+        return
     statsContainer = parsedData.findAll('table', class_=['table'])
     children1 = statsContainer[0].findChildren('td', class_='num')
     children2 = statsContainer[1].findChildren('td', class_='num')

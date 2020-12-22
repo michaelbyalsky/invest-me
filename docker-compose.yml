@@ -7,8 +7,8 @@ services:
       context: "./server"
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "8000:8000"
+      - "81:81"
+      - "8001:8001"
     volumes:
       - type: bind
         source: ./server
@@ -18,10 +18,9 @@ services:
       - MYSQL_ROOT_PASSWORD=test
       - MYSQL_USER=test
       - MYSQL_PASSWORD=test
-      - MYSQL_DATABASE=test
+      - MYSQL_DATABASE=invest_test
     networks:
-      frontapp_a:
-        ipv4_address: 172.22.0.11
+      - backend
     depends_on:
       - mysql
 
@@ -33,10 +32,9 @@ services:
       - MYSQL_ROOT_PASSWORD=test
       - MYSQL_USER=test
       - MYSQL_PASSWORD=test
-      - MYSQL_DATABASE=test
+      - MYSQL_DATABASE=invest_test
     networks:
-      frontapp_a:
-        ipv4_address: 172.22.0.10
+      - backend
 
   react-app:
     build:
@@ -46,17 +44,17 @@ services:
     stdin_open: true
     ports: 
       - "3000:3000"
+    networks:
+      - client      
     environment:
       CHOKIDAR_USEPOLLING: "true"  
     volumes:
       - type: bind
         source: ./client
-        target: /app/client    
+        target: /app    
 
 networks:
-  frontapp_a:
+  backend:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.22.0.0/16
+  client:
+    driver: bridge   
