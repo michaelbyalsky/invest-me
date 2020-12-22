@@ -7,11 +7,12 @@ on:
     branches: [main, dev] 
   push:
     branches: [main, dev]
-    
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      working-directory: ./scrapper
       - uses: actions/checkout@v2
 
       - name: Setup Python
