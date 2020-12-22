@@ -15,6 +15,7 @@ import SideBar from "./components/SideBar";
 import BigDataList from "./components/BigDataList";
 import Calculator from "./components/Calculator";
 import Profile from './components/Profile'
+import Competition from './components/Competition'
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -65,6 +66,7 @@ function App() {
               <PrivateRoute exact path="/all-stocks" component={BigDataList} />
               <PrivateRoute exact path="/calculator" component={Calculator} />
               <PrivateRoute exact path="/profile" component={Profile} />
+              <PrivateRoute exact path="/competition" component={Competition} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
             </main>

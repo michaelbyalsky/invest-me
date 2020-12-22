@@ -2,23 +2,28 @@ const axios = require("axios");
 const Router = require("express").Router();
 const { Stock, BigStockData, StockHistory } = require("../../models");
 const { Op } = require("sequelize");
+const { snakeCase } = require("lodash");
 
 Router.post("/all-data", async (req, res) => {
   try {
-    //  const { data } = await axios.get('http://localhost:8000/all-symbols')
+    const { data } = await axios.get('http://localhost:8000/all-symbols')
+    const keys = Object.keys(req.body);
+    await BigStockData.destroy({ truncate: true, force: true });
     const new_stocks = await BigStockData.bulkCreate(req.body);
-    return res.json({ created: "True" });
+    res.json({ created: "True" });
   } catch (err) {
     console.log(err);
     return res.status(400).json({
-      error: "error occured",
+      error: "error occurred",
     });
   }
 });
 
+
 Router.get("/stocks-array", async (req, res) => {
   try {
     const { data } = await axios.get("http://localhost:8000/stocks-list");
+
     await Stock.destroy({ truncate: true, cascade: false });
     await Stock.bulkCreate(data);
     await StockHistory.bulkCreate(data);
@@ -52,7 +57,13 @@ Router.post("/all", async (req, res) => {
     let data;
     if (customAttributes.length > 0) {
       data = await BigStockData.findAll({
-        attributes: ["id","title", "symbol", "currentRate", ...customAttributes],
+        attributes: [
+          "id",
+          "title",
+          "symbol",
+          "currentRate",
+          ...customAttributes,
+        ],
       });
     } else {
       data = await BigStockData.findAll({
@@ -61,6 +72,20 @@ Router.post("/all", async (req, res) => {
         },
       });
     }
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+Router.post("/top-stocks", async (req, res) => {
+  try {
+    const { atr } = req.body;
+    const data = await BigStockData.findAll({
+      limit: 10,
+      attributes: ["title", "currentRate", [snakeCase(atr), "period"]],
+      order: [[atr, "DESC"]],
+    });
     res.json(data);
   } catch (err) {
     console.log(err);

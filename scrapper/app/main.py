@@ -1,18 +1,14 @@
 from fastapi import FastAPI, HTTPException
 import uvicorn
 import sys
-# from models import User_Pydantic, UserIn_Pydantic, Users
-# from pydantic import BaseModel
-
 from scrapper import all_stocks, one_stock
-# from tortoise.contrib.fastapi import HTTPNotFoundError, register_tortoise
 import os
 
 app = FastAPI(title="StockMe API")
 
 @app.get('/')
 async def hello():
-    return {'hello': 'world'}
+    return {'msg': 'Hello World'}
 
 @app.get('/stocks-list')
 async def stock_list():
@@ -36,6 +32,7 @@ async def get_all_data():
             insert = False
         if insert:    
             allStocksDataArray.append(ans)
+    print(len(allStocksDataArray))        
     return allStocksDataArray
 
 
@@ -48,12 +45,3 @@ async def get_one_stock(q: str):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
-
-# register_tortoise(
-#     app,
-#     db_url=f"mysql://root:6425762!Me@localhost:3306/stock_me",
-#     modules={"models": ["app.models"]},
-#     generate_schemas=True,
-#     add_exception_handlers=True,
-# )
-

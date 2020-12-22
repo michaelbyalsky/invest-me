@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "2px",
     marginBottom: "1fr",
   },
-  dataGrid: { height: 600, width: "100%" },
+  dataGrid: { cursor: "pointer", height: 600, width: "100%" },
 }));
 
 export default function BigDataList() {
@@ -22,13 +22,17 @@ export default function BigDataList() {
   const [selectValues, setSelectValues] = useState(null);
   const classes = useStyles();
 
-  const handleClickOpen = useCallback(() => {
-    setOpen(true);
+  const handleCellClick = useCallback((cell) => {
+    console.log(cell.row.symbol);
   }, []);
 
-  const handleClose = useCallback(() => {
-    setOpen(false);
-  }, []);
+  // const handleClickOpen = useCallback(() => {
+  //   setOpen(true);
+  // }, []);
+
+  // const handleClose = useCallback(() => {
+  //   setOpen(false);
+  // }, []);
 
   const handleSelectChange = useCallback((e) => {
     setSelectValues(Array.isArray(e) ? e.map((x) => x.value) : []);
@@ -86,10 +90,11 @@ export default function BigDataList() {
       <div className={classes.dataGrid}>
         {bigData && columns && (
           <DataGrid
+            onCellClick={handleCellClick}
             rows={bigData}
             columns={columns}
             pageSize={20}
-            checkboxSelection
+            
           />
         )}
       </div>

@@ -6,6 +6,6 @@ RUN pip install -U -r /app/requirements.txt
 
 ADD /app/wait_for_it.sh /app/app/wait_for_it.sh
 RUN chmod +x /app/app/wait_for_it.sh
-EXPOSE 80
+EXPOSE 81
 
 COPY ./app /app

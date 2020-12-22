@@ -89,13 +89,13 @@ export default function Header({
           alignItems="flex-start"
         >
           <Grid item xs={6} sm={3}>
-            <Typography className={classes.title}>cash</Typography>
+            {/* <Typography className={classes.title}>cash</Typography> */}
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Typography className={classes.title}>investments</Typography>
+            {/* <Typography className={classes.title}>investments</Typography> */}
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Typography className={classes.title}>total money</Typography>
+            {/* <Typography className={classes.title}>total money</Typography> */}
           </Grid>
         </Grid>
         {auth && (

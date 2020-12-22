@@ -91,7 +91,7 @@ Router.post("/login", async (req, res, next) => {
       const token = generateToken(infoForToken);
       const refreshToken = jwt.sign(
         { id: result.id, username: result.username },
-        process.env.REFRESH_TOKEN_SECRET
+        process.env.REFRESH_TOKEN_SECRET, { expiresIn: req.body.rememberMe ? "365d" : "1d" }
       );
       const isTokenExist = await RefreshToken.findOne({
         where: {
