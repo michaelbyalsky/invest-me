@@ -4,6 +4,7 @@ import network from "../network/index";
 import _ from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import Select from "react-select";
+import { Link, useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -15,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function BigDataList() {
+  const history = useHistory()
   const [bigData, setBigData] = useState();
   const [columns, setColumns] = useState(null);
   const [open, setOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function BigDataList() {
   const classes = useStyles();
 
   const handleCellClick = useCallback((cell) => {
-    console.log(cell.row.symbol);
+    history.push(`/one-stock/${cell.row.symbol}`)
   }, []);
 
   // const handleClickOpen = useCallback(() => {

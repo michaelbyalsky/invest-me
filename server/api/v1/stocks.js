@@ -6,7 +6,7 @@ const { snakeCase } = require("lodash");
 
 Router.post("/all-data", async (req, res) => {
   try {
-    const { data } = await axios.get('http://localhost:8000/all-symbols')
+    const { data } = await axios.get("http://localhost:8000/all-symbols");
     const keys = Object.keys(req.body);
     await BigStockData.destroy({ truncate: true, force: true });
     const new_stocks = await BigStockData.bulkCreate(req.body);
@@ -18,7 +18,6 @@ Router.post("/all-data", async (req, res) => {
     });
   }
 });
-
 
 Router.get("/stocks-array", async (req, res) => {
   try {
@@ -121,11 +120,11 @@ Router.get("/periods", async (req, res) => {
   }
 });
 
-Router.get("/one-stock-data", async (req, res) => {
+Router.get("/one-stock-data/:symbol", async (req, res) => {
   try {
-    const link = req.query.q;
+    const linkAddress = `https://www.bizportal.co.il/realestates/quote/performance/${req.params.symbol}`;
     const { data } = await axios.get(
-      `http://localhost:8000/one-stock?q=${link}`
+      `http://localhost:8000/one-stock?q=${linkAddress}`
     );
     const updated = await BigStockData.update(data, {
       where: {
