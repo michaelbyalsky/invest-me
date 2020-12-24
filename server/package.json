@@ -15,7 +15,8 @@
     "lodash": "^4.17.20",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
-    "sequelize": "^6.3.5"
+    "sequelize": "^6.3.5",
+    "sequelize-cli": "^6.2.0"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,6 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.6",
-    "sequelize-cli": "^6.2.0",
     "start-server-and-test": "^1.11.6",
     "supertest": "^6.0.1"
   },
@@ -42,7 +42,8 @@
     "initDB": "node_modules/.bin/sequelize db:create",
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "seed": "node_modules/.bin/sequelize db:seed:all",
-    "restart": "npm run drop && npm run initDB && npm run migrate && npm run seed",
+    "undoSeed": "node_modules/.bin/sequelize db:seed:undo:all",
+    "restart": "npm run initDB && npm run migrate && npm run undoSeed && npm run seed",
     "restartTest": "NODE_ENV=test npm run restart",
     "restartAll": "npm run restart && npm run restartTest",
     "ciServer": "npm run initDB && npm run migrate && npm run test",
