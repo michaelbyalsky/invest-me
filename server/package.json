@@ -35,7 +35,7 @@
   "homepage": "https://github.com/michaelbyalsky/invest-me",
   "scripts": {
     "test": "jest --detectOpenHandles --forceExit --runInBand",
-    "start": "node server.js",
+    "start": "npm run restart && node server.js",
     "dev": "nodemon index.js",
     "drop": "node_modules/.bin/sequelize db:drop",
     "dropTest": "NODE_ENV=test node_modules/.bin/sequelize db:drop",

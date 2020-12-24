@@ -96,7 +96,6 @@ export default function BigDataList() {
             rows={bigData}
             columns={columns}
             pageSize={20}
-            
           />
         )}
       </div>

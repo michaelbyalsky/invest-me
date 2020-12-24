@@ -42,7 +42,7 @@ jobs:
           npm run testCoverage
         env:
           NODE_ENV: "test"
-          DB_USERNAME: "root"
+          DB_USER: "root"
           DB_PASSWORD: null
           DB_TEST: "invests_test"
           DB_HOST: "127.0.0.1"

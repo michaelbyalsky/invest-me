@@ -3,10 +3,11 @@ const Router = require("express").Router();
 const { Stock, BigStockData, StockHistory } = require("../../models");
 const { Op } = require("sequelize");
 const { snakeCase } = require("lodash");
+const { network } = require("../../network");
 
 Router.post("/all-data", async (req, res) => {
   try {
-    const { data } = await axios.get("http://localhost:8000/all-symbols");
+    const { data } = await network.get("/all-symbols");
     const keys = Object.keys(req.body);
     await BigStockData.destroy({ truncate: true, force: true });
     const new_stocks = await BigStockData.bulkCreate(req.body);
@@ -19,10 +20,25 @@ Router.post("/all-data", async (req, res) => {
   }
 });
 
+Router.get("/by-symbol/:symbol", async (req, res) => {
+  try {
+    const data = await Stock.findOne({
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "link"]
+      },
+      where: {
+        symbol: req.params.symbol,
+      },
+    });
+    res.json(data)
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 Router.get("/stocks-array", async (req, res) => {
   try {
-    const { data } = await axios.get("http://localhost:8000/stocks-list");
-
+    const { data } = await network.get("/stocks-list");
     await Stock.destroy({ truncate: true, cascade: false });
     await Stock.bulkCreate(data);
     await StockHistory.bulkCreate(data);
@@ -123,31 +139,37 @@ Router.get("/periods", async (req, res) => {
 Router.get("/one-stock-data/:symbol", async (req, res) => {
   try {
     const linkAddress = `https://www.bizportal.co.il/realestates/quote/performance/${req.params.symbol}`;
-    const { data } = await axios.get(
-      `http://localhost:8000/one-stock?q=${linkAddress}`
-    );
-    const updated = await BigStockData.update(data, {
-      where: {
-        symbol: data.symbol,
-      },
-    });
-    const stock = await BigStockData.findOne({
-      attributes: {
-        exclude: [
-          "createdAt",
-          "updatedAt",
-          "title",
-          "symbol",
-          "id",
-          "currentRate",
-          "dayChange",
-        ],
-      },
-      where: {
-        symbol: data.symbol,
-      },
-    });
-    res.json(stock);
+    try {
+      const { data } = await network.get(
+        `/one-stock/?q=${linkAddress}`
+      );
+      const updated = await BigStockData.update(data, {
+        where: {
+          symbol: data.symbol,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      const stock = await BigStockData.findOne({
+        attributes: {
+          exclude: [
+            "createdAt",
+            "updatedAt",
+            "title",
+            "symbol",
+            "id",
+            "currentRate",
+            "dayChange",
+          ],
+        },
+        where: {
+          symbol: req.params.symbol,
+        },
+      });
+
+      res.json(stock);
+    }
   } catch (err) {
     console.log(err);
   }
