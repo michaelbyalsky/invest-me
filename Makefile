@@ -53,6 +53,7 @@ remove-env:
 remove-images:
 	@$(MAKE) ssh-cmd CMD='docker image prune -a -f'
 
+
 start-app:
 	@$(MAKE) ssh-cmd CMD='\
 		docker run -d --name=$(CONTAINER_NAME) \
