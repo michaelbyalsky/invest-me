@@ -10,7 +10,7 @@ module.exports = {
     define: { underscored: true },
     logging: false,
     // "seederStorage": "sequelize",
-    // "seederStorageTableName": "sequelize_seeds"
+    //"seederStorageTableName": "sequelize_seeds"
   },
   test: {
     username: process.env.DB_USER || 'root',
