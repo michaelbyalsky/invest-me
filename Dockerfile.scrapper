@@ -8,4 +8,4 @@ COPY ./scrapper/app /app
 
 WORKDIR /app
 
-CMD ["uvicorn", "main:app", "--host", "35.184.19.174", "--port", "4557"]
+CMD ["uvicorn", "main:app", "--host", "localhost", "--port", "4557"]
