@@ -23,7 +23,6 @@ export default function Home() {
   const [stockRows, setStocksRows] = useState([]);
   const [usersRows, setUsersRows] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const classes = useStyles();
 
   const handleSelectChange = useCallback((e) => {
