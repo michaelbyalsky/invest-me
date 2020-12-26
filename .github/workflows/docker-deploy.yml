@@ -16,6 +16,7 @@ env:
   DB_NAME: ${{ secrets.DB_NAME }}
   ENV_FILE: ${{ secrets.ENV_FILE }} # Secret with all additional environment variables.
   SERVER_PORT: ${{ secrets.SERVER_PORT }} # the port your server is running on
+  SCRAPPER_POST: 4557
 
 jobs:
   setup-build-publish-deploy:

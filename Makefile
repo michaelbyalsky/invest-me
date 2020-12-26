@@ -74,6 +74,7 @@ start-scrapper:
 		docker run -d --name=$(SCRAPPER_CONTAINER_NAME) \
 			--restart=unless-stopped \
 			--network=$(NETWORK_NAME) \
+			-p ${SCRAPPER_PORT}:${SCRAPPER_PORT} \
 			$(REMOTE_TAG_SCRAPPER) \
 			'
 
