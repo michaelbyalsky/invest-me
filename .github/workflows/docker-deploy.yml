@@ -16,7 +16,7 @@ env:
   DB_HOST: ${{ secrets.DB_HOST }}
   DB_NAME: ${{ secrets.DB_NAME }}
   ENV_FILE: ${{ secrets.ENV_FILE }} # Secret with all additional environment variables.
-  SERVER_PORT: 81 # the port your server is running on
+  SERVER_PORT: ${{ secrets.SERVER_PORT }} # the port your server is running on
 
 jobs:
   setup-build-publish-deploy:
