@@ -63,7 +63,7 @@ start-app:
 			-e DB_NAME=${DB_NAME} \
 			-e DB_USER=${DB_USER} \
 			-e DB_PASS=${DB_PASS} \
-			-e DB_PASS=${SERVER_PORT} \
+			-e SERVER_PORT=${SERVER_PORT} \
 			--env-file=.env \
 			-p ${SERVER_PORT}:${SERVER_PORT} \
 			$(REMOTE_TAG) \
