@@ -6,6 +6,7 @@ import { startCase } from "lodash";
 import GenericTable from "./GenericTable";
 import TopStocksTable from "./TopStocksTable";
 import { useStyles } from "./HomeStyles";
+import Loading from './Loading'
 
 const stockHeaders = ["Stock", "Last Rate", "Yield"];
 const usersHeaders = [
@@ -21,6 +22,7 @@ export default function Home() {
   const [selectValues, setSelectValues] = useState("lastThirtyDays");
   const [stockRows, setStocksRows] = useState([]);
   const [usersRows, setUsersRows] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const classes = useStyles();
 
@@ -53,6 +55,7 @@ export default function Home() {
         atr: selectValues,
       });
       setStocksRows(data);
+      setLoading(false)
     } catch (err) {
       console.error(err);
     }
@@ -67,6 +70,10 @@ export default function Home() {
   useEffect(() => {
     fetchTopStocks();
   }, [selectValues]);
+
+if(loading){
+  return <Loading type={"spin"} color={"blue"} />
+}
 
   return (
     <div className={classes.root}>

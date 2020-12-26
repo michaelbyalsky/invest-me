@@ -3,6 +3,7 @@ import network from "../network/index";
 import useStyles from "./CompetitionStyles";
 import StocksTable from "./StocksTable";
 import GenericTable from "./GenericTable";
+import Loading from './Loading'
 
 const usersHeaders = [
   "username",
@@ -15,6 +16,7 @@ const usersHeaders = [
 export default function Competition() {
   const classes = useStyles();
   const [usersData, setUsersData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchPortfolios = useCallback(async () => {
     try {
@@ -46,6 +48,7 @@ export default function Competition() {
         }
       }
       setUsersData(newArr);
+      setLoading(false)
     });
   }, []);
   
@@ -53,6 +56,10 @@ export default function Competition() {
     joinedData();
   }, []);
 
+  if(loading){
+    return <Loading type={"spin"} color={"blue"} />
+  }
+  
   return (
     <div className={classes.root}>
       {usersData &&

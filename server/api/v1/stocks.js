@@ -49,7 +49,6 @@ Router.get("/stocks-array", async (req, res) => {
 });
 
 Router.get("/search", async (req, res) => {
-  console.log(req.query.q);
   try {
     const data = await Stock.findAll({
       limit: 10,
@@ -67,7 +66,6 @@ Router.get("/search", async (req, res) => {
 
 Router.post("/all", async (req, res) => {
   try {
-    console.log(req.body);
     const customAttributes = req.body;
     let data;
     if (customAttributes.length > 0) {

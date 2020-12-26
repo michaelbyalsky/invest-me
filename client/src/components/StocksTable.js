@@ -9,6 +9,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import { financial } from "../functions/helpers";
 import { useHistory } from "react-router-dom";
+import Button from "@material-ui/core/Button";
+
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -78,7 +80,7 @@ export default function StocksTable({ tableRows, onPressSell }) {
                   </TableCell>
                   <TableCell align="right">{financial(row.change)}%</TableCell>
                   {onPressSell && (
-                    <button onClick={() => onPressSell(row)}>delete</button>
+                    <Button onClick={() => onPressSell(row)}>sell</Button>
                   )}
                 </TableRow>
               ))}

@@ -13,6 +13,7 @@ import StocksTable from "./StocksTable";
 import { financial } from "../functions/helpers";
 import { useStyles } from "./PortfolioStyles";
 import GenericTable from "./GenericTable";
+import Loading from './Loading'
 
 const usersHeaders = [
   "username",
@@ -39,10 +40,10 @@ export default function Portfolio() {
   const [ifNegative, setIfNegative] = useState(false);
   const [sellPrice, setSellPrice] = useState(0);
   const [currentAmount, setCurrentAmount] = useState(0);
-  const [error, setError] = useState(""); // TODO: error
   const [buyError, setBuyError] = useState("");
   const [sellError, setSellError] = useState("");
   const [userProfit, setUserProfit] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -100,6 +101,7 @@ export default function Portfolio() {
     try {
       const { data } = await network.get("transactions/user-profit");
       setUserProfit(data);
+      setLoading(false)
     } catch (err) {
       console.error(err);
     }
@@ -107,7 +109,7 @@ export default function Portfolio() {
 
   const onAddStock = useCallback(async () => {
     if (Number(amount) <= 0) {
-      setBuyError("amount error");
+      setBuyError("Amount error");
       setTimeout(() => {
         setBuyError("");
       }, 3000);
@@ -124,6 +126,7 @@ export default function Portfolio() {
       setStockToUpdate("");
       setPrice("");
       setAmount(0);
+      setOpen(false);
     } catch (err) {
       console.error(err);
     }
@@ -163,6 +166,7 @@ export default function Portfolio() {
       setStockForSell("");
       setStockSellAmount(0);
       getUserPortfolio();
+      setOpenSell(false);
     } catch (err) {
       console.error(err);
     }
@@ -171,6 +175,7 @@ export default function Portfolio() {
   const onPressSell = useCallback((value) => {
     setCurrentAmount(value.currentAmount);
     setStockForSell(value.symbol);
+    setSellPrice(value.lastRate)
     if (value.yield < 0) {
       setIfNegative(true);
     } else {
@@ -193,6 +198,11 @@ export default function Portfolio() {
     fetchUserMoney();
     getUserPortfolio();
   }, []);
+
+  if(loading){
+    return  <Loading color={"blue"} type={"spin"}/>
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.moneyBar}>
@@ -258,6 +268,11 @@ export default function Portfolio() {
               type="number"
               onChange={(e) => setStockSellAmount(e.target.value)}
             />
+            {sellError && (
+              <div>
+                <label style={{ color: "red" }}>{sellError}</label>
+              </div>
+            )}
           </DialogContent>
           <DialogActions>
             <Button autoFocus onClick={handleCloseSell} color="primary">
@@ -314,8 +329,12 @@ export default function Portfolio() {
               type="number"
               onChange={(e) => setPrice(e.target.value)}
             />
+            {buyError && (
+              <div>
+                <label style={{ color: "red" }}>{buyError}</label>
+              </div>
+            )}
           </DialogContent>
-          <Typography variant="outlined">{buyError}</Typography>
           <DialogActions>
             <Button autoFocus onClick={handleClose} color="primary">
               Cancel
@@ -330,13 +349,13 @@ export default function Portfolio() {
         <div className={classes.stocksTable}>
           <StocksTable tableRows={rows} onPressSell={onPressSell} />
         </div>
-      <div className={classes.profitTable}>
-        <GenericTable
-          headers={usersHeaders}
-          rows={userProfit}
-          classes={classes}
-        />
-      </div>
+        <div className={classes.profitTable}>
+          <GenericTable
+            headers={usersHeaders}
+            rows={userProfit}
+            classes={classes}
+          />
+        </div>
       </div>
     </div>
   );
