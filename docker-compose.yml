@@ -22,7 +22,7 @@ services:
       - type: bind
         source: ./server
         target: /app
-    # command: sh -c '/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
+    #  command: sh -c '/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
     environment:
       - DB_PASS=test
       - DB_USER=root
