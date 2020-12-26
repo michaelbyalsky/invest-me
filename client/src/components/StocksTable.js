@@ -1,26 +1,28 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
+import { financial } from "../functions/helpers";
+import { useHistory } from "react-router-dom";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   table: {
     minWidth: 650,
   },
 }));
 
-const financial = (x) => {
-  return Number.parseFloat(x).toFixed(2);
-};
-
 export default function StocksTable({ tableRows, onPressSell }) {
   const classes = useStyles();
-  console.log("as", tableRows);
+  const history = useHistory();
+  const handleStockClick = useCallback((symbol) => {
+    history.push(`/one-stock/${symbol}`);
+  }, []);
+
   return (
     <div>
       <TableContainer component={Paper}>
@@ -55,7 +57,12 @@ export default function StocksTable({ tableRows, onPressSell }) {
             {tableRows.length !== 0 &&
               tableRows.map((row) => (
                 <TableRow key={row.title}>
-                  <TableCell component="th" scope="row">
+                  <TableCell
+                    onClick={() => handleStockClick(row.symbol)}
+                    style={{ cursor: "pointer" }}
+                    component="th"
+                    scope="row"
+                  >
                     {row.title}
                   </TableCell>
                   <TableCell align="right">{row.symbol}</TableCell>

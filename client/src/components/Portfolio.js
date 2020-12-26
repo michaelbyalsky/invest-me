@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,29 +10,17 @@ import network from "../network/index";
 import AsyncSelect from "react-select/async";
 import Typography from "@material-ui/core/Typography";
 import StocksTable from "./StocksTable";
+import { financial } from "../functions/helpers";
+import { useStyles } from "./PortfolioStyles";
+import GenericTable from "./GenericTable";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "grid",
-    gridTemplateRows: "100px 400px",
-    justifyContent: "center",
-  },
-  moneyBar: {
-    display: "flex",
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: "25ch",
-  },
-  table: {
-    minWidth: 650,
-  },
-}));
-
-const financial = (x) => {
-  return Number.parseFloat(x).toFixed(2);
-};
+const usersHeaders = [
+  "username",
+  "BuyingPrice",
+  "Current value",
+  "Total profit",
+  "Yield",
+];
 
 export default function Portfolio() {
   const classes = useStyles();
@@ -52,9 +39,10 @@ export default function Portfolio() {
   const [ifNegative, setIfNegative] = useState(false);
   const [sellPrice, setSellPrice] = useState(0);
   const [currentAmount, setCurrentAmount] = useState(0);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // TODO: error
   const [buyError, setBuyError] = useState("");
   const [sellError, setSellError] = useState("");
+  const [userProfit, setUserProfit] = useState([]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -79,6 +67,7 @@ export default function Portfolio() {
 
   useEffect(() => {
     fetchAllStocks();
+    fetchUserProfit();
   }, []);
 
   // useEffect(() => {
@@ -91,7 +80,6 @@ export default function Portfolio() {
         data: { cash },
       } = await network.get("/transactions/money");
       const { data } = await network.get("/transactions/investments");
-      console.log(data);
       setCash(cash);
       setInvestments(financial(data[0].currentPrice / 100));
     } catch (err) {
@@ -102,8 +90,16 @@ export default function Portfolio() {
   const getUserPortfolio = useCallback(async () => {
     try {
       const { data } = await network.get("/transactions");
-      console.log(data);
       setRows(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const fetchUserProfit = useCallback(async () => {
+    try {
+      const { data } = await network.get("transactions/user-profit");
+      setUserProfit(data);
     } catch (err) {
       console.error(err);
     }
@@ -136,12 +132,12 @@ export default function Portfolio() {
   const loadingOption = useCallback(async () => {
     try {
       const { data } = await network.get(`/stocks/search?q=${query}`);
-      const maped = data.map((stock) => ({
+      const mapped = data.map((stock) => ({
         label: stock.title,
         symbol: stock.symbol,
         price: stock.lastRate,
       }));
-      return maped;
+      return mapped;
     } catch (err) {
       console.error(err);
     }
@@ -163,7 +159,6 @@ export default function Portfolio() {
         negative: ifNegative,
         sellPrice: sellPrice,
       };
-      console.log(obj);
       const { data } = await network.patch("/transactions", obj);
       setStockForSell("");
       setStockSellAmount(0);
@@ -175,7 +170,6 @@ export default function Portfolio() {
 
   const onPressSell = useCallback((value) => {
     setCurrentAmount(value.currentAmount);
-    console.log(value);
     setStockForSell(value.symbol);
     if (value.yield < 0) {
       setIfNegative(true);
@@ -199,7 +193,6 @@ export default function Portfolio() {
     fetchUserMoney();
     getUserPortfolio();
   }, []);
-  console.log(query);
   return (
     <div className={classes.root}>
       <div className={classes.moneyBar}>
@@ -227,9 +220,11 @@ export default function Portfolio() {
         </div>
       </div>
       <div>
-        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-          new stock
-        </Button>
+        <div className={classes.button}>
+          <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+            new stock
+          </Button>
+        </div>
         <Dialog
           fullWidth="true"
           open={openSell}
@@ -258,7 +253,7 @@ export default function Portfolio() {
               value={stockSellAmount}
               className={classes.textField}
               helperText="stock sell amount"
-              margin="dense"
+              margin="amount"
               variant="outlined"
               type="number"
               onChange={(e) => setStockSellAmount(e.target.value)}
@@ -330,7 +325,18 @@ export default function Portfolio() {
             </Button>
           </DialogActions>
         </Dialog>
-        <StocksTable tableRows={rows} onPressSell={onPressSell} />
+      </div>
+      <div className={classes.tableWrapper}>
+        <div className={classes.stocksTable}>
+          <StocksTable tableRows={rows} onPressSell={onPressSell} />
+        </div>
+      <div className={classes.profitTable}>
+        <GenericTable
+          headers={usersHeaders}
+          rows={userProfit}
+          classes={classes}
+        />
+      </div>
       </div>
     </div>
   );

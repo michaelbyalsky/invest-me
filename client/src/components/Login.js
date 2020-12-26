@@ -10,7 +10,6 @@ import {
   InputLabel,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-
 import network from "../network/index";
 import { useHistory, Link } from "react-router-dom";
 import AuthApi from "../contexts/Auth";
@@ -176,15 +175,6 @@ function Login() {
       </Paper>
     </main>
   );
-
-  // async function login() {
-  // 	try {
-  // 		await firebase.login(email, password)
-  // 		props.history.replace('/dashboard')
-  // 	} catch(error) {
-  // 		alert(error.message)
-  // 	}
-  // }
 }
 
 export default Login;

@@ -4,7 +4,7 @@ name: CI-SERVER
 # events but only for the main branch
 on:
   pull_request:
-    branches: [main, dev] # if github changes the 'master' to 'main'
+    branches: [main, dev] 
   push:
     branches: [main, dev]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -42,8 +42,8 @@ jobs:
           npm run testCoverage
         env:
           NODE_ENV: "test"
-          DB_USERNAME: "root"
-          DB_PASSWORD: null
+          DB_USER: "root"
+          DB_PASS: null
           DB_TEST: "invests_test"
           DB_HOST: "127.0.0.1"
           ACCESS_TOKEN_SECRET: "sdlkmf4930fjerfdfokvmdsldm1920ejeiockdv950gij54eorjflrf9430r4rjo34plre"

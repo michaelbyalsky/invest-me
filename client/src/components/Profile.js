@@ -55,7 +55,6 @@ export default function Profile() {
     return <div>loading</div>;
   }
 
-  console.log(userInfo);
 
   return (
     <div className={classes.root}>

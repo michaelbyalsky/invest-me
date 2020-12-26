@@ -1,0 +1,25 @@
+# .github/workflows/ci-scrapper.yml
+
+name: CI-SCRAPPER
+
+on:
+  pull_request:
+    branches: [main, dev] 
+  push:
+    branches: [main, dev]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install dependencies with pipenv
+        working-directory: ./scrapper
+        run: |
+          pip install -r requirements.txt
+      - run: pytest ./app/test.py

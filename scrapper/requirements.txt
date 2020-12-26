@@ -1,6 +1,4 @@
 fastapi
-tortoise-orm[aiomysql]
-pytest
 uvicorn
 bs4
 requests

@@ -1,24 +1,39 @@
 version: '3'
 
 services:
-  app:
+  scrapper:
+    build:
+      context: .
+      dockerfile: Dockerfile.scrapper
+    container_name: scrapper
+    hostname: scrapper     
+    networks:
+      - backend
+
+  server:
+    hostname: server 
     container_name: server
     build:
-      context: "./server"
+      context: "./"
       dockerfile: Dockerfile
     ports:
       - "81:81"
-      - "8001:8001"
     volumes:
       - type: bind
         source: ./server
         target: /app
-    command: sh -c '/app/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
+    # command: sh -c '/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
     environment:
-      - MYSQL_ROOT_PASSWORD=test
-      - MYSQL_USER=test
-      - MYSQL_PASSWORD=test
-      - MYSQL_DATABASE=invest_test
+      - DB_PASS=test
+      - DB_USER=root
+      - DB_TEST=test
+      - DB_NAME=invest_test
+      - DB_HOST=mysql
+      - SERVER_PORT=81
+      - ACCESS_TOKEN_SECRET="sdlkmf4930fjerfdfokvmdsldm1920ejeiockdv950gij54eorjflrf9430r4rjo34pdslkfrjr894utjeriiofj2389ey378wegsdyr8gf578th45igojkldfmvsf934rjmnslewkflcnewmffgdfgkdmflfmgfdklsmdgklfmdsklcmggfklsdmxvcvlbmerwfemskdldsfmlgreklfnsdklnccdcnekldweddsxklfmg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf58lreg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf58kf94f"
+      - REFRESH_TOKEN_SECRET="dcdsvnxcvrdfklvnrghrtbdvnsdklsndcdlfjbckxcmnslewkflcnewmffgdfgkdmflfmgfdklsmdgklfmdsklcmggfklsdmxvcvlbmerwfemskdldsfmlgreklfnsdklnccdcnekldweddsxklfmg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf58riofj5905t4i5t905itreokf58490jedsvldfmldkm54y89j5effdc389ejewriofj5905t4i5t905itreokf58490jedsvldfmldkm54y89j5effdc389ejewriofj5905t4i5t905itreokf58490jedsvld"
+      - SCRAPPER_HOST=scrapper
+      - SCRAPPER_PORT=4557
     networks:
       - backend
     depends_on:
@@ -29,29 +44,31 @@ services:
     container_name: mysql
     hostname: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=test
-      - MYSQL_USER=test
+      - MYSQL_ROOT_PASSWORD=null
+      - MYSQL_USER=root
       - MYSQL_PASSWORD=test
       - MYSQL_DATABASE=invest_test
+
     networks:
       - backend
 
-  react-app:
-    build:
-      context: "./client"
-      dockerfile: Dockerfile
-    container_name: react-app  
-    stdin_open: true
-    ports: 
-      - "3000:3000"
-    networks:
-      - client      
-    environment:
-      CHOKIDAR_USEPOLLING: "true"  
-    volumes:
-      - type: bind
-        source: ./client
-        target: /app    
+  
+  # react-app:
+  #   build:
+  #     context: "./client"
+  #     dockerfile: Dockerfile
+  #   container_name: react-app  
+  #   stdin_open: true
+  #   ports: 
+  #     - "3000:3000"
+  #   networks:
+  #     - client      
+  #   environment:
+  #     CHOKIDAR_USEPOLLING: "true"  
+  #   volumes:
+  #     - type: bind
+  #       source: ./client
+  #       target: /app    
 
 networks:
   backend:

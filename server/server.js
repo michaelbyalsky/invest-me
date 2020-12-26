@@ -1,29 +1,21 @@
-const { BigStockData } = require("./models");
-const axios = require("axios");
+const { start } = require("./scrapperEvent");
+const moment = require("moment");
 
-const updateData = async () => {
-  try {
-    const { data } = await axios.get("http://localhost:8000/all-symbols");
-    const keys = Object.keys(data);
-    console.log(data.length);
-    await BigStockData.destroy({ truncate: true, force: true });
-    const new_stocks = await BigStockData.bulkCreate(data);
-  } catch (err) {
-    console.log(err);
-    return res.status(400).json({
-      error: "error occurred",
-    });
-  }
-};
+const endOfDay = moment().endOf("day").valueOf();
+const now = moment().valueOf();
+const timeOut = endOfDay - now;
+const dayInMilliseconds = 1000 * 60 * 60 * 24
 
 const app = require("./app");
 
-apiPort = 5000;
+const apiPort = process.env.SERVER_PORT || 5000;
 
 app.listen(apiPort, () => {
   console.log(`app listening on port ${apiPort}`);
-  updateData();
-  //   setInterval(() => {
-  //       updateData();
-  //   }, 3600 * 1000);
+  setTimeout(() => {
+    start();
+    setInterval(() => {
+      start();
+    },process.env.NODE_ENV === 'production' ? dayInMilliseconds : 1000 * 60 * 10);
+  }, process.env.NODE_ENV === 'production' ? timeOut : 300);
 });

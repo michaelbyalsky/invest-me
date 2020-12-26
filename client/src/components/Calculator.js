@@ -4,6 +4,8 @@ import TextField from "@material-ui/core/TextField";
 import AsyncSelect from "react-select/async";
 import network from "../network/index";
 import Select from "react-select";
+import { startCase } from 'lodash'
+import { financial } from '../functions/helpers'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,24 +26,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const financial = (x) => {
-  return Number.parseFloat(x).toFixed(2);
-};
-
 const Calculator = () => {
   const classes = useStyles();
   const [cash, setCash] = useState(0);
   const [query, setQuery] = useState(null);
   const [stockLink, setStockLink] = useState(null);
   const [periodYield, setPeriodYield] = useState("");
-  const [estimateYield, setEstimateYield] = useState('');
+  const [estimateYield, setEstimateYield] = useState("");
   const [options, setOptions] = useState();
 
   const handleSelectStockChange = useCallback(async (value) => {
-    setStockLink(value.link);
-    // setStockToUpdate(value.symbol);
-    // setPrice(value.price);
-    // setValue(value.lable);
+    setStockLink(value.symbol);
   }, []);
 
   useEffect(() => {
@@ -53,7 +48,6 @@ const Calculator = () => {
   }, [stockLink]);
 
   const handleSelectPeriodChange = useCallback((value) => {
-    console.log(value);
     setPeriodYield(value.value);
   }, []);
 
@@ -73,7 +67,7 @@ const Calculator = () => {
       const { data } = await network.get(`/stocks/search?q=${query}`);
       const mapped = data.map((stock) => ({
         label: stock.title,
-        link: stock.link,
+        symbol: stock.symbol,
       }));
       return mapped;
     } catch (err) {
@@ -86,12 +80,9 @@ const Calculator = () => {
       return;
     }
     try {
-      const { data } = await network.get(
-        `stocks/one-stock-data?q=${stockLink}`
-      );
+      const { data } = await network.get(`stocks/one-stock-data/${stockLink}`);
       const list = Object.entries(data);
-      const mapped = list.map((item) => ({ label: item[0], value: item[1] }));
-      console.log(mapped);
+      const mapped = list.map((item) => ({ label: startCase(item[0]), value: item[1] }));
       setOptions(mapped);
       return mapped;
       //   return mapped;

@@ -4,6 +4,7 @@ import network from "../network/index";
 import _ from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import Select from "react-select";
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -15,15 +16,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function BigDataList() {
+  const history = useHistory()
   const [bigData, setBigData] = useState();
   const [columns, setColumns] = useState(null);
-  const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [selectValues, setSelectValues] = useState(null);
   const classes = useStyles();
 
   const handleCellClick = useCallback((cell) => {
-    console.log(cell.row.symbol);
+    history.push(`/one-stock/${cell.row.symbol}`)
   }, []);
 
   // const handleClickOpen = useCallback(() => {
@@ -51,7 +52,6 @@ export default function BigDataList() {
     try {
       const { data } = await network.post("/stocks/all", selectValues);
       const oneStock = data[0];
-      const oneStockValues = Object.values(oneStock);
       const resColumns = Object.keys(oneStock).map((key, i) => {
         return {
           field: key,
@@ -94,7 +94,6 @@ export default function BigDataList() {
             rows={bigData}
             columns={columns}
             pageSize={20}
-            
           />
         )}
       </div>
