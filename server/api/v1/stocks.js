@@ -41,7 +41,7 @@ Router.get("/stocks-array", async (req, res) => {
     const { data } = await network.get("/stocks-list");
     await Stock.destroy({ truncate: true, cascade: false });
     await Stock.bulkCreate(data);
-    await StockHistory.bulkCreate(data);
+    // await StockHistory.bulkCreate(data);
     return res.json({ updated: true });
   } catch (err) {
     console.log(err);
