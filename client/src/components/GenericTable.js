@@ -7,10 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-
-const financial = (x) => {
-  return Number.parseFloat(x).toFixed(2);
-};
+import { financial } from '../functions/helpers'
 
 export default function GenericTable({ classes, rows, headers }) {
   

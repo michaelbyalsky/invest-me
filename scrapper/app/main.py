@@ -32,7 +32,6 @@ async def get_all_data():
             insert = False
         if insert:    
             allStocksDataArray.append(ans)
-    print(len(allStocksDataArray))        
     return allStocksDataArray
 
 

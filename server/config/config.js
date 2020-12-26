@@ -3,9 +3,9 @@ require('dotenv').config();
 module.exports = {
   development: {
     username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || null,
+    password: process.env.DB_PASS || null,
     database: process.env.DB_NAME || 'invests',
-    host: process.env.DB_HOST || '34.67.18.168',
+    host: process.env.DB_HOST || 'localhost',
     dialect: 'mysql',
     define: { underscored: true },
     logging: false,
@@ -14,17 +14,17 @@ module.exports = {
   },
   test: {
     username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || null,
+    password: process.env.DB_PASS || null,
     database: process.env.DB_TEST || 'invests_test',
-    host: process.env.DB_HOST || "null",
+    host: process.env.DB_HOST || "localhost",
     dialect: 'mysql',
     define: { underscored: true },
     logging: false,
   },
   production: {
     username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME || 'invests_production',
+    password: process.env.DB_PASS || null,
+    database: process.env.DB_NAME || 'invests',
     host: process.env.DB_HOST || '127.0.0.1',
     dialect: 'mysql',
     define: { underscored: true },

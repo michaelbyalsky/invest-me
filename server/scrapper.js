@@ -5,14 +5,11 @@ const axios = require("axios");
     try {
       const { data } = await axios.get("http://localhost:8000/all-symbols");
       const keys = Object.keys(data);
-      console.log(data.length);
       await BigStockData.destroy({ truncate: true, force: true });
       const new_stocks = await BigStockData.bulkCreate(data);
+      console.log(`update ${data.length} stocks`)
     } catch (err) {
       console.log(err);
-      return res.status(400).json({
-        error: "error occurred",
-      });
     }
   })();
 

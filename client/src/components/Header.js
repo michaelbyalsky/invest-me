@@ -19,7 +19,6 @@ export default function Header({
   classes,
   handleDrawerOpen,
   drawerOpen,
-  handleDrawerClose,
 }) {
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);

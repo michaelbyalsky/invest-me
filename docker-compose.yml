@@ -24,12 +24,12 @@ services:
         target: /app
     # command: sh -c '/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
     environment:
-      - DB_PASSWORD=test
+      - DB_PASS=test
       - DB_USER=root
       - DB_TEST=test
       - DB_NAME=invest_test
       - DB_HOST=mysql
-      - PORT=81
+      - SERVER_PORT=81
       - ACCESS_TOKEN_SECRET="sdlkmf4930fjerfdfokvmdsldm1920ejeiockdv950gij54eorjflrf9430r4rjo34pdslkfrjr894utjeriiofj2389ey378wegsdyr8gf578th45igojkldfmvsf934rjmnslewkflcnewmffgdfgkdmflfmgfdklsmdgklfmdsklcmggfklsdmxvcvlbmerwfemskdldsfmlgreklfnsdklnccdcnekldweddsxklfmg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf58lreg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf58kf94f"
       - REFRESH_TOKEN_SECRET="dcdsvnxcvrdfklvnrghrtbdvnsdklsndcdlfjbckxcmnslewkflcnewmffgdfgkdmflfmgfdklsmdgklfmdsklcmggfklsdmxvcvlbmerwfemskdldsfmlgreklfnsdklnccdcnekldweddsxklfmg834t3958tjervr9fft4ejrfknf32893rufjriofj5905t4i5t905itreokf58riofj5905t4i5t905itreokf58490jedsvldfmldkm54y89j5effdc389ejewriofj5905t4i5t905itreokf58490jedsvldfmldkm54y89j5effdc389ejewriofj5905t4i5t905itreokf58490jedsvld"
       - SCRAPPER_HOST=scrapper

@@ -6,7 +6,7 @@ const { emit } = require('process');
 let child
 
 const start = () => {
-  console.log(chalk.magenta('update functions process started'))
+  console.log(chalk.magenta('update stocks data process started'))
   const ls =  spawn('node',['scrapper.js'])
   ls.stdout.on('data', (data) => {
     if(''+data === 'finished'){

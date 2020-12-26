@@ -38,7 +38,6 @@ export default function OneStock() {
       const { data: meta } = await network.get(
         `/stocks/by-symbol/${params.symbol}`
       );
-      console.log(meta);
       setStockMeta1(meta);
     } catch (err) {
       console.error(err);

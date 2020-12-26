@@ -126,7 +126,7 @@
 module.exports = {
   development: {
     username: process.env.DB_USER || <span class="branch-1 cbranch-no" title="branch not covered" >'root',</span>
-    password: process.env.DB_PASSWORD || <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
+    password: process.env.DB_PASS || <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
     database: process.env.DB_NAME || <span class="branch-1 cbranch-no" title="branch not covered" >'invests',</span>
     host: process.env.DB_HOST || <span class="branch-1 cbranch-no" title="branch not covered" >'127.0.0.1',</span>
     dialect: 'mysql',
@@ -137,7 +137,7 @@ module.exports = {
   },
   test: {
     username: process.env.DB_USER || <span class="branch-1 cbranch-no" title="branch not covered" >'root',</span>
-    password: process.env.DB_PASSWORD || <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
+    password: process.env.DB_PASS || <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
     database: process.env.DB_TEST || <span class="branch-1 cbranch-no" title="branch not covered" >'invests_test',</span>
     host: process.env.DB_HOST || <span class="branch-1 cbranch-no" title="branch not covered" >'127.0.0.1',</span>
     dialect: 'mysql',
@@ -146,7 +146,7 @@ module.exports = {
   },
   production: {
     username: process.env.DB_USER || <span class="branch-1 cbranch-no" title="branch not covered" >'root',</span>
-    password: process.env.DB_PASSWORD || <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
+    password: process.env.DB_PASS || <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
     database: process.env.DB_NAME || <span class="branch-1 cbranch-no" title="branch not covered" >'invests_production',</span>
     host: process.env.DB_HOST || <span class="branch-1 cbranch-no" title="branch not covered" >'127.0.0.1',</span>
     dialect: 'mysql',

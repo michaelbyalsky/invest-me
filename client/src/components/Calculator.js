@@ -5,6 +5,7 @@ import AsyncSelect from "react-select/async";
 import network from "../network/index";
 import Select from "react-select";
 import { startCase } from 'lodash'
+import { financial } from '../functions/helpers'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,10 +25,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 650,
   },
 }));
-
-const financial = (x) => {
-  return Number.parseFloat(x).toFixed(2);
-};
 
 const Calculator = () => {
   const classes = useStyles();
@@ -79,7 +76,6 @@ const Calculator = () => {
   }, [query]);
 
   const loadingPeriodOptions = useCallback(async () => {
-    console.log(stockLink);
     if (!stockLink) {
       return;
     }
@@ -87,7 +83,6 @@ const Calculator = () => {
       const { data } = await network.get(`stocks/one-stock-data/${stockLink}`);
       const list = Object.entries(data);
       const mapped = list.map((item) => ({ label: startCase(item[0]), value: item[1] }));
-      console.log(mapped);
       setOptions(mapped);
       return mapped;
       //   return mapped;
