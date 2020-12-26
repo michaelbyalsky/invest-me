@@ -5,6 +5,7 @@ import network from "../network/index";
 import moment from "moment";
 import { Button } from "@material-ui/core";
 import { useForm } from "react-hook-form";
+import Loading from './Loading'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Profile() {
   const classes = useStyles();
   const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true)
 
   const { register: updateProfile, handleSubmit: submitProfile } = useForm({
     mode: "onBlur",
@@ -34,6 +36,7 @@ export default function Profile() {
     try {
       const { data } = await network.get("/users/info");
       setUserInfo(data);
+      setLoading(false)
     } catch (err) {
       console.error(err);
     }
@@ -51,10 +54,9 @@ export default function Profile() {
     getUserInfo();
   }, []);
 
-  if (!userInfo) {
-    return <div>loading</div>;
+  if (loading){
+    return <Loading type={"spin"} color={"blue"}/>
   }
-
 
   return (
     <div className={classes.root}>

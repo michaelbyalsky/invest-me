@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography,
@@ -72,10 +72,13 @@ function Login() {
   }, []);
 
   const login = async (e) => {
+    if (!email || !password) {
+      return handleError("please enter email and password");
+    }
     let body = {
       email: email,
       password: password,
-      rememberMe: rememberMe  
+      rememberMe: rememberMe,
     };
     try {
       const { data } = await network.post("/auth/login", body);
@@ -94,12 +97,16 @@ function Login() {
       history.push("/");
     } catch (err) {
       console.log(err);
-      setError(err.message);
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
+      handleError("invalid email or password");
     }
   };
+
+  const handleError = useCallback((message) => {
+    setError(message)
+    setTimeout(() => {
+      setError(null)
+    }, 3000)
+  }, []);
 
   return (
     <main className={classes.main}>
@@ -115,7 +122,7 @@ function Login() {
           onSubmit={(e) => e.preventDefault() && false}
         >
           <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="User">User</InputLabel>
+            <InputLabel htmlFor="Email">Email</InputLabel>
             <Input
               id="email"
               name="email"
