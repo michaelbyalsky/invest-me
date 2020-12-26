@@ -4,7 +4,7 @@ services:
   scrapper:
     build:
       context: .
-      dockerfile: Dockerfile.scrapper
+      dockerfile: Dockerfile.scrapper.dev
     container_name: scrapper
     hostname: scrapper     
     networks:
