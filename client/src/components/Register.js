@@ -12,6 +12,8 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Link, useHistory } from "react-router-dom";
 import network from "../network/index";
 import { makeStyles } from "@material-ui/core/styles";
+import { useForm } from "react-hook-form";
+import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -49,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Register(props) {
   const classes = useStyles();
+  const { register, handleSubmit, errors } = useForm();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -57,21 +60,13 @@ export default function Register(props) {
   const [password, setPassword] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const history = useHistory();
+  const [dialogOpen, setDialogOpen] = useState("");
 
-  const onRegister = (e) => {
-    let body = {
-      firstName: firstName,
-      lastName: lastName,
-      username: username,
-      email: email,
-      birthDate: birthDate,
-      password: password,
-    };
-    
+  const onRegister = (data) => {
     network
-      .post("/auth/register", body)
+      .post("/auth/register", data)
       .then((res) => {
-        history.push("/login");
+        setDialogOpen(true)
       })
       .catch((err) => {
         console.error(err);
@@ -87,10 +82,7 @@ export default function Register(props) {
         <Typography component="h1" variant="h5">
           Register Account
         </Typography>
-        <form
-          className={classes.form}
-          onSubmit={(e) => e.preventDefault() && false}
-        >
+        <form className={classes.form} onSubmit={handleSubmit(onRegister)}>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="firstName">First name</InputLabel>
             <Input
@@ -98,9 +90,14 @@ export default function Register(props) {
               name="firstName"
               autoComplete="off"
               autoFocus
+              error={errors.firstName ? true : false}
               value={firstName}
+              inputRef={register({ required: true })}
               onChange={(e) => setFirstName(e.target.value)}
             />
+            {errors.firstName && errors.firstName.type === "required" && (
+              <span style={{ color: "red" }}>firstName is required</span>
+            )}
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="lastName">Last name</InputLabel>
@@ -108,10 +105,15 @@ export default function Register(props) {
               id="lastName"
               name="lastName"
               autoComplete="off"
+              inputRef={register({ required: true })}
               autoFocus
+              error={errors.lastName ? true : false}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
+            {errors.lastName && errors.lastName.type === "required" && (
+              <span style={{ color: "red" }}>lastName is required</span>
+            )}
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="name">username</InputLabel>
@@ -119,20 +121,30 @@ export default function Register(props) {
               id="username"
               name="username"
               autoComplete="off"
+              inputRef={register({ required: true })}
               autoFocus
+              error={errors.username ? true : false}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
+            {errors.username && errors.username.type === "required" && (
+              <span style={{ color: "red" }}>username is required</span>
+            )}
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="email">Email Address</InputLabel>
             <Input
               id="email"
               name="email"
+              inputRef={register({ required: true })}
               autoComplete="off"
               value={email}
+              error={errors.email ? true : false}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {errors.email && errors.email.type === "required" && (
+              <span style={{ color: "red" }}>email is required</span>
+            )}
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="password">Password</InputLabel>
@@ -141,15 +153,27 @@ export default function Register(props) {
               type="password"
               id="password"
               autoComplete="off"
+              inputRef={register({ required: true, minLength: 6 })}
+              error={errors.password ? true : false}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {errors.password && errors.password.type === "minLength" && (
+              <span style={{ color: "red" }}>
+                password must be at least 6 characters length
+              </span>
+            )}
+            {errors.password && errors.password.type === "required" && (
+              <span style={{ color: "red" }}>password is required</span>
+            )}
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel shrink htmlFor="birthDate">
               Birth Date
             </InputLabel>
             <Input
+              error={errors.birthDate ? true : false}
+              inputRef={register({ required: true })}
               name="birthDate"
               type="date"
               id="birthDate"
@@ -183,6 +207,9 @@ export default function Register(props) {
           </Button>
         </form>
       </Paper>
+      {dialogOpen && (
+        <GenericDialog open={dialogOpen} setOpen={setDialogOpen} />
+      )}
     </main>
   );
 }

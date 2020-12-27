@@ -8,7 +8,6 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import network from "../network/index";
 import AsyncSelect from "react-select/async";
-import Typography from "@material-ui/core/Typography";
 import StocksTable from "./StocksTable";
 import { financial } from "../functions/helpers";
 import { useStyles } from "./PortfolioStyles";
@@ -69,6 +68,8 @@ export default function Portfolio() {
   useEffect(() => {
     fetchAllStocks();
     fetchUserProfit();
+    fetchUserMoney();
+    getUserPortfolio();
   }, []);
 
   // useEffect(() => {
@@ -122,6 +123,8 @@ export default function Portfolio() {
         buyAmount: Number(amount),
       };
       const { data } = await network.post("/transactions", obj);
+      fetchUserProfit();
+      fetchUserMoney();
       getUserPortfolio();
       setStockToUpdate("");
       setPrice("");
@@ -165,6 +168,8 @@ export default function Portfolio() {
       const { data } = await network.patch("/transactions", obj);
       setStockForSell("");
       setStockSellAmount(0);
+      fetchUserProfit();
+      fetchUserMoney();
       getUserPortfolio();
       setOpenSell(false);
     } catch (err) {
@@ -194,10 +199,7 @@ export default function Portfolio() {
     setValue(value.lable);
   }, []);
 
-  useEffect(() => {
-    fetchUserMoney();
-    getUserPortfolio();
-  }, []);
+
 
   if(loading){
     return  <Loading color={"blue"} type={"spin"}/>

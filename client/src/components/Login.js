@@ -14,6 +14,7 @@ import network from "../network/index";
 import { useHistory, Link } from "react-router-dom";
 import AuthApi from "../contexts/Auth";
 import Cookies from "js-cookie";
+import SmallLoading from "./SmallLoading";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -56,6 +57,7 @@ function Login() {
   const [email, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
   const [error, setError] = useState(null);
   const history = useHistory();
 
@@ -81,9 +83,10 @@ function Login() {
       rememberMe: rememberMe,
     };
     try {
+      setLoginLoading(true);
       const { data } = await network.post("/auth/login", body);
       if (data.success !== true) {
-        return;
+        return setLoginLoading(false);
       }
       if (rememberMe) {
         Cookies.set("rememberMe", true);
@@ -94,18 +97,20 @@ function Login() {
         id: Cookies.get("userId"),
         username: Cookies.get("username"),
       });
+      setLoginLoading(false);
       history.push("/");
     } catch (err) {
       console.log(err);
+      setLoginLoading(false);
       handleError("invalid email or password");
     }
   };
 
   const handleError = useCallback((message) => {
-    setError(message)
+    setError(message);
     setTimeout(() => {
-      setError(null)
-    }, 3000)
+      setError(null);
+    }, 3000);
   }, []);
 
   return (
@@ -164,9 +169,10 @@ function Login() {
             color="primary"
             onClick={login}
             className={classes.submit}
-          >
+            >
             Sign in
           </Button>
+            {loginLoading && <SmallLoading />}
           <Button
             type="submit"
             fullWidth

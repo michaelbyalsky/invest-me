@@ -10,7 +10,7 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Loading({ type, color }) {
+export default function Loading({ type, color}) {
   const classes = useStyles();
   return (
     <div className={classes.root}>

@@ -4,8 +4,9 @@ import TextField from "@material-ui/core/TextField";
 import AsyncSelect from "react-select/async";
 import network from "../network/index";
 import Select from "react-select";
-import { startCase } from 'lodash'
-import { financial } from '../functions/helpers'
+import { startCase } from "lodash";
+import { financial } from "../functions/helpers";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,19 +25,41 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
   },
+  cash: {
+    margin: "auto",
+    marginBottom: "40px",
+  },
 }));
 
 const Calculator = () => {
   const classes = useStyles();
   const [cash, setCash] = useState(0);
-  const [query, setQuery] = useState(null);
+  const [query, setQuery] = useState("");
   const [stockLink, setStockLink] = useState(null);
   const [periodYield, setPeriodYield] = useState("");
   const [estimateYield, setEstimateYield] = useState("");
   const [options, setOptions] = useState();
+  const [stockOption, setStockOptions] = useState();
+  const [error, setError] = useState("");
+  const [defaultValue, setDefaultValue] = useState("");
+  // const [stockTitle, setStockTitle] = useState('')
+
+  const onClear = useCallback(() => {
+    setCash(0);
+    setStockLink(null);
+    setPeriodYield("");
+    setEstimateYield("");
+    setOptions("");
+    setStockOptions("");
+    setQuery("");
+    setDefaultValue("");
+    loadingStockOptions();
+    // setStockTitle('')
+  }, []);
 
   const handleSelectStockChange = useCallback(async (value) => {
     setStockLink(value.symbol);
+    // setStockTitle(value.label)
   }, []);
 
   useEffect(() => {
@@ -47,9 +70,20 @@ const Calculator = () => {
     loadingPeriodOptions();
   }, [stockLink]);
 
-  const handleSelectPeriodChange = useCallback((value) => {
-    setPeriodYield(value.value);
-  }, []);
+  useEffect(() => {
+    loadingStockOptions();
+  }, [query]);
+
+  useEffect(() => {
+    loadingStockOptions();
+  }, [query]);
+
+  const handleSelectPeriodChange = useCallback(
+    (value) => {
+      setPeriodYield(value.value);
+    },
+    [stockLink]
+  );
 
   const handleInputStockChange = useCallback((value) => {
     setQuery(value);
@@ -60,16 +94,13 @@ const Calculator = () => {
   }, []);
 
   const loadingStockOptions = useCallback(async () => {
-    if (query === null) {
-      return;
-    }
     try {
       const { data } = await network.get(`/stocks/search?q=${query}`);
       const mapped = data.map((stock) => ({
         label: stock.title,
         symbol: stock.symbol,
       }));
-      return mapped;
+      setStockOptions(mapped);
     } catch (err) {
       console.error(err);
     }
@@ -77,12 +108,15 @@ const Calculator = () => {
 
   const loadingPeriodOptions = useCallback(async () => {
     if (!stockLink) {
-      return;
+      return setError("first choose link");
     }
     try {
       const { data } = await network.get(`stocks/one-stock-data/${stockLink}`);
       const list = Object.entries(data);
-      const mapped = list.map((item) => ({ label: startCase(item[0]), value: item[1] }));
+      const mapped = list.map((item) => ({
+        label: startCase(item[0]),
+        value: item[1],
+      }));
       setOptions(mapped);
       return mapped;
       //   return mapped;
@@ -93,8 +127,9 @@ const Calculator = () => {
 
   return (
     <div className={classes.root}>
-      <div>
+      <div className={classes.cash}>
         <TextField
+          // isClearable={true}
           label="Cash"
           id="outlined-margin-dense"
           value={cash}
@@ -107,16 +142,17 @@ const Calculator = () => {
       </div>
       <div className={classes.moneyBar}>
         <div>
-          <AsyncSelect
+          <Select
+            // isClearable={true}
             className={classes.textField}
             cacheOptions
             defaultOptions
             hideSelectedOptions={false}
-            // value={stockToUpdate}
+            defaultValue={defaultValue}
             onChange={handleSelectStockChange}
             placeholder={"select stock"}
             onInputChange={handleInputStockChange}
-            loadOptions={loadingStockOptions}
+            options={stockOption}
           />
         </div>
         <div>
@@ -124,7 +160,7 @@ const Calculator = () => {
             className={classes.textField}
             cacheOptions
             // defaultOptions
-
+            defaultValue={defaultValue}
             onChange={handleSelectPeriodChange}
             placeholder={"select period"}
             options={options}
@@ -134,7 +170,7 @@ const Calculator = () => {
       <div className={classes.moneyBar}>
         <div>
           <TextField
-            label="Period yield %"
+            helperText="Period yield %"
             id="outlined-margin-dense"
             value={`${periodYield}`}
             className={classes.textField}
@@ -145,7 +181,7 @@ const Calculator = () => {
         </div>
         <div>
           <TextField
-            label="Estimate yield"
+            helperText="Estimate yield"
             id="outlined-margin-dense"
             value={estimateYield}
             className={classes.textField}
@@ -154,6 +190,11 @@ const Calculator = () => {
             type="number"
           />
         </div>
+      </div>
+      <div className={classes.cash}>
+        <Button onClick={onClear} variant="contained" color="primary">
+          clear
+        </Button>
       </div>
     </div>
   );
