@@ -55,7 +55,7 @@ export default function Profile() {
   }, []);
 
   if (loading){
-    return <Loading type={"spin"} color={"blue"}/>
+    return <Loading type={"spin"} color={"blue"} height={667} width={375}  />
   }
 
   return (

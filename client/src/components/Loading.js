@@ -10,11 +10,11 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Loading({ type, color}) {
+export default function Loading({ type, color, height, width}) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <ReactLoading type={type} color={color} height={667} width={375} />
+      <ReactLoading type={type} color={color} height={height} width={width} />
     </div>
   );
 }

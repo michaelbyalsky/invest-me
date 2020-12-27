@@ -14,8 +14,14 @@ async def hello():
 async def stock_list():
     stocks = all_stocks()
     if not stocks:
-        return { "error": "error occured"}
+        return { "error": "error occurred"}
     return stocks
+
+@app.get('/one-stock/')
+async def get_one_stock(q: str):
+    stock = one_stock(q)
+    stock['symbol'] = q.split('/')[-1]
+    return stock
 
 @app.get('/all-symbols')
 async def get_all_data():
@@ -24,9 +30,8 @@ async def get_all_data():
     for stock in allStocks:
         insert = True
         try:
-            ans = one_stock(str(stock['link']))
-            ans['symbol'] = stock['link'].split('/')[-1]
-        # stockObj['symbol'] = ans['symbol']
+            symbol = stock['link'].split('/')[-1]
+            ans = one_stock(str(stock['link']), symbol)
         except Exception as e:
             print(e)
             insert = False
@@ -36,11 +41,6 @@ async def get_all_data():
 
 
 
-@app.get('/one-stock/')
-async def get_one_stock(q: str):
-    stock = one_stock(q)
-    stock['symbol'] = q.split('/')[-1]
-    return stock
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
+from models import OneStockBigData, SingleStockData
+
 headers = {
     'User-Agent': 'My User Agent 1.0',
 }
@@ -36,16 +38,18 @@ def parse_stock_data(childred):
     title = childred[0].text
     lastRate = float(childred[3].text.replace(',', ''))
     todayChangePrecent = float(childred[5].text[0:-1])
-    return {'link': 'https://www.bizportal.co.il/realestates/quote/performance/' + symbol, 'title': title, 'symbol': symbol, 'lastRate': lastRate, 'todayChangePrecent': todayChangePrecent}
+    newStock = SingleStockData('https://www.bizportal.co.il/realestates/quote/performance/' + symbol, title, symbol, lastRate, todayChangePrecent)
+    newStockObj = newStock.createObj()
+    return newStockObj
 
 
-def one_stock(path):
+def one_stock(path, symbol):
     res = fetch_data(path)
     try:    
         parsedData = parse_data(res.text)
     except Exception as e:
         print(e)
-        return
+        return    
     statsContainer = parsedData.findAll('table', class_=['table'])
     children1 = statsContainer[0].findChildren('td', class_='num')
     children2 = statsContainer[1].findChildren('td', class_='num')
@@ -65,12 +69,21 @@ def one_stock(path):
     except:
         stockData['currentRate'] = None
     stockData['title'] = parsedData.find('span', class_='paper-name').text
+    stockData["symbol"] = symbol
+    # newStock = OneStockBigData(stockData["lastDay"], stockData["lastWeek"], stockData["lastMonth"], stockData["lastThirtyDays"], stockData["lastThreeMonths"],
+    # stockData["lastSixMonths"], stockData["lastNineMonth"], stockData["lastYear"], stockData["lastTwoYears"], stockData["lastThreeYears"], stockData["lastFiveYears"],
+    # stockData["yearAgoYield"], stockData["twoYearsAgoYield"], stockData["threeYearsAgoYield"], stockData["fourYearsAgoYield"], stockData["pe"], stockData["dayChange"], 
+    # stockData["currentRate"], stockData["title"], stockData["symbol"])
+    
+    # newStockObj = newStock.createObj()
+    # print(newStockObj)
+    print(stockData)
     return stockData
 
 def parse_extra_content(childred):
     attributes_array = ['lastDay', 'lastWeek', 'lastMonth', 'lastThirtyDays', 'lastThreeMonth', 'lastSixMonths', 'lastNineMonths',
      'lastYear', 'lastTwelveMonths', 'lastTwoYears', 'lastThreeYears', 'lastFiveYears', 'yearAgoYield', 'twoYearsAgoYield', 
-     'threeYearsAgoYield', 'fourYearsAgoY']
+     'threeYearsAgoYield', 'fourYearsAgoYield']
     stockData = {}
     for i in range(len(attributes_array)):
         try:

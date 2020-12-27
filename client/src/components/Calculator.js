@@ -112,6 +112,7 @@ const Calculator = () => {
     }
     try {
       const { data } = await network.get(`stocks/one-stock-data/${stockLink}`);
+      console.log(data);
       const list = Object.entries(data);
       const mapped = list.map((item) => ({
         label: startCase(item[0]),

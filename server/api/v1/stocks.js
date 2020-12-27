@@ -141,6 +141,7 @@ Router.get("/one-stock-data/:symbol", async (req, res) => {
       const { data } = await network.get(
         `/one-stock/?q=${linkAddress}`
       );
+      console.log(data);
       const updated = await BigStockData.update(data, {
         where: {
           symbol: data.symbol,
@@ -165,7 +166,7 @@ Router.get("/one-stock-data/:symbol", async (req, res) => {
           symbol: req.params.symbol,
         },
       });
-
+console.log(stock);
       res.json(stock);
     }
   } catch (err) {

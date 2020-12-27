@@ -12,7 +12,7 @@ import StocksTable from "./StocksTable";
 import { financial } from "../functions/helpers";
 import { useStyles } from "./PortfolioStyles";
 import GenericTable from "./GenericTable";
-import Loading from './Loading'
+import Loading from "./Loading";
 
 const usersHeaders = [
   "username",
@@ -102,7 +102,7 @@ export default function Portfolio() {
     try {
       const { data } = await network.get("transactions/user-profit");
       setUserProfit(data);
-      setLoading(false)
+      setLoading(false);
     } catch (err) {
       console.error(err);
     }
@@ -180,7 +180,7 @@ export default function Portfolio() {
   const onPressSell = useCallback((value) => {
     setCurrentAmount(value.currentAmount);
     setStockForSell(value.symbol);
-    setSellPrice(value.lastRate)
+    setSellPrice(value.lastRate);
     if (value.yield < 0) {
       setIfNegative(true);
     } else {
@@ -199,10 +199,8 @@ export default function Portfolio() {
     setValue(value.lable);
   }, []);
 
-
-
-  if(loading){
-    return  <Loading color={"blue"} type={"spin"}/>
+  if (loading) {
+    return <Loading type={"spin"} color={"blue"} height={667} width={375}  />
   }
 
   return (
@@ -248,34 +246,35 @@ export default function Portfolio() {
           </DialogTitle>
           <DialogContent>
             <DialogContentText>{sellError}</DialogContentText>
-            <TextField
-              label="price"
-              id="outlined-margin-dense"
-              value={sellPrice}
-              className={classes.textField}
-              helperText="stock sell amount"
-              margin="dense"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setSellPrice(e.target.value)}
-            />
-            <TextField
-              label="amount"
-              id="outlined-margin-dense"
-              value={stockSellAmount}
-              className={classes.textField}
-              helperText="stock sell amount"
-              margin="amount"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setStockSellAmount(e.target.value)}
-            />
+            <div className={classes.actions}>
+              <TextField
+                id="outlined-margin-dense"
+                value={sellPrice}
+                className={classes.textField}
+                helperText="stock sell price"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setSellPrice(e.target.value)}
+              />
+              <TextField
+                id="outlined-margin-dense"
+                value={stockSellAmount}
+                className={classes.textField}
+                helperText="stock sell amount"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setStockSellAmount(e.target.value)}
+              />
+            </div>
             {sellError && (
               <div>
                 <label style={{ color: "red" }}>{sellError}</label>
               </div>
             )}
           </DialogContent>
+
           <DialogActions>
             <Button autoFocus onClick={handleCloseSell} color="primary">
               Cancel
@@ -309,33 +308,33 @@ export default function Portfolio() {
               onInputChange={handleInputChange}
               loadOptions={loadingOption}
             />
-            <TextField
-              label="Dense"
-              id="outlined-margin-dense"
-              value={amount}
-              className={classes.textField}
-              helperText="stock amount"
-              margin="dense"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <TextField
-              label="price"
-              id="outlined-margin-dense"
-              value={price}
-              className={classes.textField}
-              helperText="stock buying price"
-              margin="dense"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setPrice(e.target.value)}
-            />
-            {buyError && (
-              <div>
-                <label style={{ color: "red" }}>{buyError}</label>
-              </div>
-            )}
+            <div className={classes.actions}>
+              <TextField
+                id="outlined-margin-dense"
+                value={amount}
+                className={classes.textField}
+                helperText="stock amount"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setAmount(e.target.value)}
+              />
+              <TextField
+                id="outlined-margin-dense"
+                value={price}
+                className={classes.textField}
+                helperText="stock buying price"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setPrice(e.target.value)}
+              />
+              {buyError && (
+                <div>
+                  <label style={{ color: "red" }}>{buyError}</label>
+                </div>
+              )}
+            </div>
           </DialogContent>
           <DialogActions>
             <Button autoFocus onClick={handleClose} color="primary">

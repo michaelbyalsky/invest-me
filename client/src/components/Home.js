@@ -6,7 +6,7 @@ import { startCase } from "lodash";
 import GenericTable from "./GenericTable";
 import TopStocksTable from "./TopStocksTable";
 import { useStyles } from "./HomeStyles";
-import Loading from './Loading'
+import Loading from "./Loading";
 
 const stockHeaders = ["Stock", "Last Rate", "Yield"];
 const usersHeaders = [
@@ -54,7 +54,7 @@ export default function Home() {
         atr: selectValues,
       });
       setStocksRows(data);
-      setLoading(false)
+      setLoading(false);
     } catch (err) {
       console.error(err);
     }
@@ -70,9 +70,9 @@ export default function Home() {
     fetchTopStocks();
   }, [selectValues]);
 
-if(loading){
-  return <Loading type={"spin"} color={"blue"} />
-}
+  if (loading) {
+    return <Loading type={"spin"} color={"blue"} height={667} width={375} />;
+  }
 
   return (
     <div className={classes.root}>
