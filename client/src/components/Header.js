@@ -6,7 +6,6 @@ import AuthApi from "../contexts/Auth";
 import Grid from "@material-ui/core/Grid";
 import React, { useCallback } from "react";
 import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
@@ -14,18 +13,22 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { useHistory } from "react-router-dom";
 import Cookies from "js-cookie";
 import network from "../network/index";
+import { financial } from "../functions/helpers";
+import { userMoneyState } from "../recoil/Atom";
+import { useRecoilState } from "recoil";
+import { useEffect, useState } from "react";
+import UpdateMoney from './UpdateMoney'
 
-export default function Header({
-  classes,
-  handleDrawerOpen,
-  drawerOpen,
-}) {
+export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { userValue } = React.useContext(AuthApi);
   const [currentUser, setCurrentUser] = userValue;
+  const [userMoney, setUserMoney] = useRecoilState(userMoneyState);
+  const [openModal, setOpenModal] = useState(false)
   const history = useHistory();
+
   const handleChange = (event) => {
     setAuth(event.target.checked);
   };
@@ -41,6 +44,24 @@ export default function Header({
   const handleProfile = useCallback(() => {
     setAnchorEl(null);
     history.push("/profile");
+  }, []);
+
+  const fetchUserMoney = useCallback(async () => {
+    try {
+      const {
+        data: { cash },
+      } = await network.get("/transactions/money");
+      const { data } = await network.get("/transactions/investments");
+      setUserMoney({
+        cash: cash,
+        investments: financial(data[0].currentPrice / 100),
+      });
+      if (cash == 0){
+       setOpenModal(true) 
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }, []);
 
   const handleLogout = useCallback(async () => {
@@ -59,6 +80,10 @@ export default function Header({
     } catch (err) {
       console.error(err);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchUserMoney();
   }, []);
 
   return (
@@ -87,14 +112,18 @@ export default function Header({
           justify="center"
           alignItems="flex-start"
         >
-          <Grid item xs={6} sm={3}>
-            {/* <Typography className={classes.title}>cash</Typography> */}
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            {/* <Typography className={classes.title}>investments</Typography> */}
-          </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={6} sm={5}>
             {/* <Typography className={classes.title}>total money</Typography> */}
+          </Grid>
+          <Grid item xs={6} sm={2}>
+            <Typography className={classes.title}>
+              cash: {userMoney.cash}
+            </Typography>
+          </Grid>
+          <Grid item xs={6} sm={2}>
+            <Typography className={classes.title}>
+              investments: {userMoney.investments}
+            </Typography>
           </Grid>
         </Grid>
         {auth && (
@@ -129,6 +158,7 @@ export default function Header({
           </div>
         )}
       </Toolbar>
+      <UpdateMoney setOpen={setOpenModal} open={openModal} />
     </AppBar>
     // </div>
   );

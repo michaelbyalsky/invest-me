@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from "react";
-import _ from "lodash";
 import Select from "react-select";
 import network from "../network/index";
 import { startCase } from "lodash";
@@ -71,7 +70,7 @@ export default function Home() {
   }, [selectValues]);
 
   if (loading) {
-    return <Loading type={"spin"} color={"blue"} height={667} width={375} />;
+    return <Loading type={"spin"} color={"blue"} height={333} width={185} />;
   }
 
   return (

@@ -1,7 +1,5 @@
 const chalk = require('chalk')
-const readline = require('readline')
 const {spawn} = require('child_process');
-const { emit } = require('process');
 
 let child
 

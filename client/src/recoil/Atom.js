@@ -1,6 +1,6 @@
-import { atom, atomFamily } from "recoil";
+import { atom } from "recoil";
 
-export const stocksArrayState = atom({
-    key: 'stocksState',
-    default: [],
-  });
+export const userMoneyState = atom({
+  key: "userMoney",
+  default: { cash: 0, investments: 0 },
+});

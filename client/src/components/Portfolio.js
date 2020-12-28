@@ -14,6 +14,8 @@ import { useStyles } from "./PortfolioStyles";
 import GenericTable from "./GenericTable";
 import SmallLoading from "./SmallLoading";
 import Loading from "./Loading";
+import { userMoneyState } from "../recoil/Atom";
+import { useRecoilState } from "recoil";
 
 const usersHeaders = [
   "username",
@@ -46,6 +48,8 @@ export default function Portfolio() {
   const [loading, setLoading] = useState(true);
   const [loadingBuy, setLoadingBuy] = useState(false);
   const [loadingSell, setLoadingSell] = useState(false);
+  const [userMoney, setUserMoney] = useRecoilState(userMoneyState);
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -85,8 +89,10 @@ export default function Portfolio() {
         data: { cash },
       } = await network.get("/transactions/money");
       const { data } = await network.get("/transactions/investments");
-      setCash(cash);
-      setInvestments(financial(data[0].currentPrice / 100));
+      setUserMoney({
+        cash: cash,
+        investments: financial(data[0].currentPrice / 100),
+      });
     } catch (err) {
       console.error(err);
     }
@@ -211,7 +217,7 @@ export default function Portfolio() {
   }, []);
 
   if (loading) {
-    return <Loading type={"spin"} color={"blue"} height={667} width={375} />;
+    return <Loading type={"spin"} color={"blue"} height={333} width={185} />;
   }
 
   return (
@@ -221,7 +227,7 @@ export default function Portfolio() {
           <TextField
             label="Cash"
             id="outlined-margin-dense"
-            value={cash}
+            value={userMoney.cash}
             className={classes.textField}
             margin="dense"
             variant="outlined"
@@ -232,7 +238,7 @@ export default function Portfolio() {
           <TextField
             label="Investments"
             id="outlined-margin-dense"
-            value={investments}
+            value={userMoney.investments}
             className={classes.textField}
             margin="dense"
             variant="outlined"

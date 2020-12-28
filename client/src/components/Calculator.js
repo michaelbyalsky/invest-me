@@ -7,6 +7,7 @@ import Select from "react-select";
 import { startCase } from "lodash";
 import { financial } from "../functions/helpers";
 import Button from "@material-ui/core/Button";
+import CircularLoading from "./CircularLoading";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,8 +28,10 @@ const useStyles = makeStyles((theme) => ({
   },
   cash: {
     margin: "auto",
-    marginBottom: "40px",
   },
+  loading: {
+    margin: "auto",
+  }
 }));
 
 const Calculator = () => {
@@ -42,8 +45,9 @@ const Calculator = () => {
   const [stockOption, setStockOptions] = useState([]);
   const [error, setError] = useState("");
   const [defaultValue, setDefaultValue] = useState("");
-  const [stockValue, setStockValue] = useState("")
-  const [optionValue, setOptionValue] = useState("")
+  const [stockValue, setStockValue] = useState("");
+  const [optionValue, setOptionValue] = useState("");
+  const [loading, setLoading] = useState("");
   // const [stockTitle, setStockTitle] = useState('')
 
   const onClear = useCallback(() => {
@@ -56,14 +60,14 @@ const Calculator = () => {
     setQuery("");
     setDefaultValue("");
     loadingStockOptions();
-    setStockValue("")
-    setOptionValue("")
+    setStockValue("");
+    setOptionValue("");
     // setStockTitle('')
   }, []);
 
   const handleSelectStockChange = useCallback(async (value) => {
     setStockLink(value.symbol);
-    setStockValue(value)
+    setStockValue(value);
     // setStockTitle(value.label)
   }, []);
 
@@ -85,7 +89,7 @@ const Calculator = () => {
 
   const handleSelectPeriodChange = useCallback(
     (value) => {
-      setOptionValue(value)
+      setOptionValue(value);
       setPeriodYield(value.value);
     },
     [stockLink]
@@ -101,12 +105,14 @@ const Calculator = () => {
 
   const loadingStockOptions = useCallback(async () => {
     try {
+      setLoading(true);
       const { data } = await network.get(`/stocks/search?q=${query}`);
       const mapped = data.map((stock) => ({
         label: stock.title,
         symbol: stock.symbol,
       }));
       setStockOptions(mapped);
+      setLoading(false);
     } catch (err) {
       console.error(err);
     }
@@ -117,6 +123,7 @@ const Calculator = () => {
       return setError("first choose link");
     }
     try {
+      setLoading(true);
       const { data } = await network.get(`stocks/one-stock-data/${stockLink}`);
       const list = Object.entries(data);
       const mapped = list.map((item) => ({
@@ -124,6 +131,7 @@ const Calculator = () => {
         value: item[1],
       }));
       setOptions(mapped);
+      setLoading(false);
       return mapped;
       //   return mapped;
     } catch (err) {
@@ -203,6 +211,7 @@ const Calculator = () => {
           clear
         </Button>
       </div>
+      <div className={classes.loading}>{loading && <CircularLoading />}</div>
     </div>
   );
 };
