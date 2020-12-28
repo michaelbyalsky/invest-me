@@ -12,6 +12,7 @@ import StocksTable from "./StocksTable";
 import { financial } from "../functions/helpers";
 import { useStyles } from "./PortfolioStyles";
 import GenericTable from "./GenericTable";
+import SmallLoading from "./SmallLoading";
 import Loading from "./Loading";
 
 const usersHeaders = [
@@ -43,6 +44,8 @@ export default function Portfolio() {
   const [sellError, setSellError] = useState("");
   const [userProfit, setUserProfit] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingBuy, setLoadingBuy] = useState(false);
+  const [loadingSell, setLoadingSell] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -122,7 +125,9 @@ export default function Portfolio() {
         buyPrice: price,
         buyAmount: Number(amount),
       };
+      setLoadingBuy(true);
       const { data } = await network.post("/transactions", obj);
+      setLoadingBuy(false);
       fetchUserProfit();
       fetchUserMoney();
       getUserPortfolio();
@@ -131,6 +136,8 @@ export default function Portfolio() {
       setAmount(0);
       setOpen(false);
     } catch (err) {
+      setBuyError("system Error");
+      setLoadingBuy(false);
       console.error(err);
     }
   }, [stockToUpdate, price, amount]);
@@ -165,7 +172,9 @@ export default function Portfolio() {
         negative: ifNegative,
         sellPrice: sellPrice,
       };
+      setLoadingSell(true)
       const { data } = await network.patch("/transactions", obj);
+      setLoadingSell(false)
       setStockForSell("");
       setStockSellAmount(0);
       fetchUserProfit();
@@ -173,6 +182,8 @@ export default function Portfolio() {
       getUserPortfolio();
       setOpenSell(false);
     } catch (err) {
+      setLoadingSell(false)
+      setSellError("system error");
       console.error(err);
     }
   }, [sellPrice, ifNegative, stockForSell, stockSellAmount, currentAmount]);
@@ -200,7 +211,7 @@ export default function Portfolio() {
   }, []);
 
   if (loading) {
-    return <Loading type={"spin"} color={"blue"} height={667} width={375}  />
+    return <Loading type={"spin"} color={"blue"} height={667} width={375} />;
   }
 
   return (
@@ -273,6 +284,7 @@ export default function Portfolio() {
                 <label style={{ color: "red" }}>{sellError}</label>
               </div>
             )}
+            {loadingSell && <SmallLoading />}
           </DialogContent>
 
           <DialogActions>
@@ -329,13 +341,20 @@ export default function Portfolio() {
                 type="number"
                 onChange={(e) => setPrice(e.target.value)}
               />
-              {buyError && (
-                <div>
-                  <label style={{ color: "red" }}>{buyError}</label>
-                </div>
-              )}
             </div>
           </DialogContent>
+          {buyError && (
+            <div
+              style={{
+                color: "red",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <label>{buyError}</label>
+            </div>
+          )}
+          {loadingBuy && <SmallLoading />}
           <DialogActions>
             <Button autoFocus onClick={handleClose} color="primary">
               Cancel

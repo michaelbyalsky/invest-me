@@ -8,7 +8,7 @@ app = FastAPI(title="StockMe API")
 
 @app.get('/')
 async def hello():
-    return {'msg': 'stock me api'}
+    return {'msg': 'investMe api'}
 
 @app.get('/stocks-list')
 async def stock_list():
@@ -19,8 +19,8 @@ async def stock_list():
 
 @app.get('/one-stock/')
 async def get_one_stock(q: str):
-    stock = one_stock(q)
-    stock['symbol'] = q.split('/')[-1]
+    symbol = q.split('/')[-1]
+    stock = one_stock(q, symbol)
     return stock
 
 @app.get('/all-symbols')
