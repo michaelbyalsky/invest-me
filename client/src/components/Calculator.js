@@ -36,29 +36,34 @@ const Calculator = () => {
   const [cash, setCash] = useState(0);
   const [query, setQuery] = useState("");
   const [stockLink, setStockLink] = useState(null);
-  const [periodYield, setPeriodYield] = useState("");
-  const [estimateYield, setEstimateYield] = useState("");
+  const [periodYield, setPeriodYield] = useState(0);
+  const [estimateYield, setEstimateYield] = useState(0);
   const [options, setOptions] = useState();
-  const [stockOption, setStockOptions] = useState();
+  const [stockOption, setStockOptions] = useState([]);
   const [error, setError] = useState("");
   const [defaultValue, setDefaultValue] = useState("");
+  const [stockValue, setStockValue] = useState("")
+  const [optionValue, setOptionValue] = useState("")
   // const [stockTitle, setStockTitle] = useState('')
 
   const onClear = useCallback(() => {
     setCash(0);
     setStockLink(null);
-    setPeriodYield("");
-    setEstimateYield("");
+    setPeriodYield(0);
+    setEstimateYield(0);
     setOptions("");
-    setStockOptions("");
+    setStockOptions([]);
     setQuery("");
     setDefaultValue("");
     loadingStockOptions();
+    setStockValue("")
+    setOptionValue("")
     // setStockTitle('')
   }, []);
 
   const handleSelectStockChange = useCallback(async (value) => {
     setStockLink(value.symbol);
+    setStockValue(value)
     // setStockTitle(value.label)
   }, []);
 
@@ -80,6 +85,7 @@ const Calculator = () => {
 
   const handleSelectPeriodChange = useCallback(
     (value) => {
+      setOptionValue(value)
       setPeriodYield(value.value);
     },
     [stockLink]
@@ -112,7 +118,6 @@ const Calculator = () => {
     }
     try {
       const { data } = await network.get(`stocks/one-stock-data/${stockLink}`);
-      console.log(data);
       const list = Object.entries(data);
       const mapped = list.map((item) => ({
         label: startCase(item[0]),
@@ -149,7 +154,7 @@ const Calculator = () => {
             cacheOptions
             defaultOptions
             hideSelectedOptions={false}
-            defaultValue={defaultValue}
+            value={stockValue}
             onChange={handleSelectStockChange}
             placeholder={"select stock"}
             onInputChange={handleInputStockChange}
@@ -161,6 +166,7 @@ const Calculator = () => {
             className={classes.textField}
             cacheOptions
             // defaultOptions
+            value={optionValue}
             defaultValue={defaultValue}
             onChange={handleSelectPeriodChange}
             placeholder={"select period"}
