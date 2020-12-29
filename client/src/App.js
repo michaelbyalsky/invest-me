@@ -14,9 +14,10 @@ import clsx from "clsx";
 import SideBar from "./components/SideBar";
 import BigDataList from "./components/BigDataList";
 import Calculator from "./components/Calculator";
-import Profile from './components/Profile'
-import Competition from './components/Competition'
-import OneStock from './components/OneStock'
+import Profile from "./components/Profile";
+import Competition from "./components/Competition";
+import OneStock from "./components/OneStock";
+import Footer from "./components/Footer";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -25,7 +26,6 @@ function App() {
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
-  
 
   const handleDrawerClose = () => {
     setDrawerOpen(false);
@@ -37,42 +37,59 @@ function App() {
       }}
     >
       <Router>
-        <div className={classes.root}>
-          <CssBaseline />
-          {currentUser && (
-            <Header
-              handleDrawerClose={handleDrawerClose}
-              drawerOpen={drawerOpen}
-              handleDrawerOpen={handleDrawerOpen}
-              classes={classes}
-            />
-          )}
-          {currentUser && (
-            <SideBar
-              handleDrawerClose={handleDrawerClose}
-              drawerOpen={drawerOpen}
-              handleDrawerOpen={handleDrawerOpen}
-              classes={classes}
-            />
-          )}
-          <Switch>
-            <main
-              className={clsx(classes.content, {
-                [classes.contentShift]: drawerOpen,
-              })}
-            >
-              <div className={classes.drawerHeader} />
-              <PrivateRoute exact path="/" component={Home} />
-              <PrivateRoute exact path="/portfolio" component={Portfolio} />
-              <PrivateRoute exact path="/all-stocks" component={BigDataList} />
-              <PrivateRoute exact path="/calculator" component={Calculator} />
-              <PrivateRoute exact path="/profile" component={Profile} />
-              <PrivateRoute exact path="/competition" component={Competition} />
-              <PrivateRoute exact path="/one-stock/:symbol" component={OneStock} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/register" component={Register} />
-            </main>
-          </Switch>
+        <div className={classes.wrapper}>
+          <div className={classes.root}>
+            <CssBaseline />
+            {currentUser && (
+              <Header
+                handleDrawerClose={handleDrawerClose}
+                drawerOpen={drawerOpen}
+                handleDrawerOpen={handleDrawerOpen}
+                classes={classes}
+              />
+            )}
+            {currentUser && (
+              <SideBar
+                handleDrawerClose={handleDrawerClose}
+                drawerOpen={drawerOpen}
+                handleDrawerOpen={handleDrawerOpen}
+                classes={classes}
+              />
+            )}
+            <Switch>
+              <main
+                className={clsx(classes.content, {
+                  [classes.contentShift]: drawerOpen,
+                })}
+              >
+                <div className={classes.drawerHeader} />
+                <PrivateRoute exact path="/" component={Home} />
+                <PrivateRoute exact path="/portfolio" component={Portfolio} />
+                <PrivateRoute
+                  exact
+                  path="/all-stocks"
+                  component={BigDataList}
+                />
+                <PrivateRoute exact path="/calculator" component={Calculator} />
+                <PrivateRoute exact path="/profile" component={Profile} />
+                <PrivateRoute
+                  exact
+                  path="/competition"
+                  component={Competition}
+                />
+                <PrivateRoute
+                  exact
+                  path="/one-stock/:symbol"
+                  component={OneStock}
+                />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/register" component={Register} />
+              </main>
+            </Switch>
+          </div>
+          <div className={classes.footer}>
+            <Footer />
+          </div>
         </div>
       </Router>
     </AuthApi.Provider>
