@@ -14,8 +14,7 @@ import { useStyles } from "./PortfolioStyles";
 import GenericTable from "./GenericTable";
 import SmallLoading from "./SmallLoading";
 import Loading from "./Loading";
-import { userMoneyState } from "../recoil/Atom";
-import { useRecoilState } from "recoil";
+import AuthApi from "../contexts/Auth";
 
 const usersHeaders = [
   "username",
@@ -26,9 +25,9 @@ const usersHeaders = [
 ];
 
 export default function Portfolio() {
+  const { userValue } = React.useContext(AuthApi);
+  const [currentUser, setCurrentUser] = userValue;
   const classes = useStyles();
-  const [cash, setCash] = useState(0);
-  const [investments, setInvestments] = useState(0);
   const [open, setOpen] = useState(false);
   const [openSell, setOpenSell] = useState(false);
   const [query, setQuery] = useState("");
@@ -48,12 +47,10 @@ export default function Portfolio() {
   const [loading, setLoading] = useState(true);
   const [loadingBuy, setLoadingBuy] = useState(false);
   const [loadingSell, setLoadingSell] = useState(false);
-  const [userMoney, setUserMoney] = useRecoilState(userMoneyState);
 
-
-  const handleClickOpen = () => {
+  const handleClickOpen = useCallback(() => {
     setOpen(true);
-  };
+  }, []);
 
   const handleCloseSell = useCallback(() => {
     setOpenSell(false);
@@ -74,34 +71,20 @@ export default function Portfolio() {
 
   useEffect(() => {
     fetchAllStocks();
-    fetchUserProfit();
-    fetchUserMoney();
+    getUserInfo();
     getUserPortfolio();
+    fetchUserProfit()
   }, []);
 
   // useEffect(() => {
   //   searchStocks();
   // }, [query]);
 
-  const fetchUserMoney = useCallback(async () => {
+  const getUserInfo = useCallback(async () => {
     try {
-      const {
-        data: { cash },
-      } = await network.get("/transactions/money");
-      const { data } = await network.get("/transactions/investments");
-      setUserMoney({
-        cash: cash,
-        investments: financial(data[0].currentPrice / 100),
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
-
-  const getUserPortfolio = useCallback(async () => {
-    try {
-      const { data } = await network.get("/transactions");
-      setRows(data);
+      const { data } = await network.get("/users/info");
+      setLoading(false);
+      setCurrentUser(data);
     } catch (err) {
       console.error(err);
     }
@@ -111,7 +94,16 @@ export default function Portfolio() {
     try {
       const { data } = await network.get("transactions/user-profit");
       setUserProfit(data);
-      setLoading(false);
+      setLoading(false)
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const getUserPortfolio = useCallback(async () => {
+    try {
+      const { data } = await network.get("/transactions");
+      setRows(data);
     } catch (err) {
       console.error(err);
     }
@@ -134,9 +126,9 @@ export default function Portfolio() {
       setLoadingBuy(true);
       const { data } = await network.post("/transactions", obj);
       setLoadingBuy(false);
-      fetchUserProfit();
-      fetchUserMoney();
+      getUserInfo();
       getUserPortfolio();
+      fetchUserProfit()
       setStockToUpdate("");
       setPrice("");
       setAmount(0);
@@ -178,17 +170,17 @@ export default function Portfolio() {
         negative: ifNegative,
         sellPrice: sellPrice,
       };
-      setLoadingSell(true)
+      setLoadingSell(true);
       const { data } = await network.patch("/transactions", obj);
-      setLoadingSell(false)
+      setLoadingSell(false);
       setStockForSell("");
       setStockSellAmount(0);
-      fetchUserProfit();
-      fetchUserMoney();
+      getUserInfo();
+      fetchUserProfit()
       getUserPortfolio();
       setOpenSell(false);
     } catch (err) {
-      setLoadingSell(false)
+      setLoadingSell(false);
       setSellError("system error");
       console.error(err);
     }
@@ -227,7 +219,7 @@ export default function Portfolio() {
           <TextField
             label="Cash"
             id="outlined-margin-dense"
-            value={userMoney.cash}
+            value={currentUser.cash}
             className={classes.textField}
             margin="dense"
             variant="outlined"
@@ -238,7 +230,7 @@ export default function Portfolio() {
           <TextField
             label="Investments"
             id="outlined-margin-dense"
-            value={userMoney.investments}
+            value={financial(currentUser.investments)}
             className={classes.textField}
             margin="dense"
             variant="outlined"

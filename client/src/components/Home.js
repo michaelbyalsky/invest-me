@@ -8,6 +8,7 @@ import { useStyles } from "./HomeStyles";
 import Loading from "./Loading";
 
 const stockHeaders = ["Stock", "Last Rate", "Yield"];
+
 const usersHeaders = [
   "username",
   "BuyingPrice",

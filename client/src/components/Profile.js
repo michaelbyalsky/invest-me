@@ -5,7 +5,9 @@ import network from "../network/index";
 import moment from "moment";
 import { Button } from "@material-ui/core";
 import { useForm } from "react-hook-form";
-import Loading from './Loading'
+import Loading from "./Loading";
+import AuthApi from "../contexts/Auth";
+import CircularLoading from "./CircularLoading";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,6 +17,10 @@ const useStyles = makeStyles((theme) => ({
   },
   dualBox: {
     display: "flex",
+    justifyContent: "center",
+  },
+  button: {
+    margin: "auto",
   },
   textField: {
     marginLeft: theme.spacing(1),
@@ -25,8 +31,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Profile() {
   const classes = useStyles();
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+  const { userValue } = React.useContext(AuthApi);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [currentUser, setCurrentUser] = userValue;
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
 
   const { register: updateProfile, handleSubmit: submitProfile } = useForm({
     mode: "onBlur",
@@ -35,27 +45,41 @@ export default function Profile() {
   const getUserInfo = useCallback(async () => {
     try {
       const { data } = await network.get("/users/info");
-      setUserInfo(data);
-      setLoading(false)
+      setCurrentUser(data);
+      setLoading(false);
     } catch (err) {
       console.error(err);
+      setError("system error");
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   }, []);
   const onChangeProfile = useCallback(async (data) => {
     getUserInfo();
     try {
+      setLoadingUpdate(true);
       await network.post("/users/info", data);
+      getUserInfo();
+      setLoadingUpdate(false);
+      setSuccess("updated successfully");
+      setTimeout(() => {
+        setSuccess(null);
+      }, 3000);
     } catch (err) {
       console.error(err);
+      setError("system error");
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   }, []);
-
   useEffect(() => {
     getUserInfo();
   }, []);
 
-  if (loading){
-    return <Loading type={"spin"} color={"blue"} height={333} width={185}  />
+  if (loading) {
+    return <Loading type={"spin"} color={"blue"} height={333} width={185} />;
   }
 
   return (
@@ -73,7 +97,7 @@ export default function Profile() {
               name="firstName"
               inputRef={updateProfile()}
               id="outlined-margin-dense"
-              defaultValue={userInfo.firstName}
+              defaultValue={currentUser.firstName}
               className={classes.textField}
               margin="dense"
               variant="outlined"
@@ -86,7 +110,7 @@ export default function Profile() {
               name="lastName"
               inputRef={updateProfile()}
               id="outlined-margin-dense"
-              defaultValue={userInfo.lastName}
+              defaultValue={currentUser.lastName}
               className={classes.textField}
               margin="dense"
               variant="outlined"
@@ -101,7 +125,7 @@ export default function Profile() {
               name="username"
               inputRef={updateProfile()}
               id="outlined-margin-dense"
-              defaultValue={userInfo.username}
+              defaultValue={currentUser.username}
               className={classes.textField}
               margin="dense"
               variant="outlined"
@@ -114,7 +138,7 @@ export default function Profile() {
               name="birthDate"
               inputRef={updateProfile()}
               id="outlined-margin-dense"
-              defaultValue={moment(userInfo.birthDate).format("YYYY-MM-DD")}
+              defaultValue={moment(currentUser.birthDate).format("YYYY-MM-DD")}
               className={classes.textField}
               margin="dense"
               variant="outlined"
@@ -129,7 +153,7 @@ export default function Profile() {
               helperText="Cash"
               name="cash"
               inputRef={updateProfile()}
-              defaultValue={userInfo["UserMoney.cash"]}
+              defaultValue={currentUser.cash}
               className={classes.textField}
               margin="dense"
               variant="outlined"
@@ -137,7 +161,7 @@ export default function Profile() {
             />
           </div>
         </div>
-        <div>
+        <div className={classes.button}>
           <Button
             type="submit"
             className={classes.button}
@@ -146,6 +170,10 @@ export default function Profile() {
           >
             update
           </Button>
+        </div>
+        <div className={classes.button}>
+          {loadingUpdate && <CircularLoading />}
+          {success && <span style={{ color: "blue" }}>{success}</span>}
         </div>
       </form>
     </div>

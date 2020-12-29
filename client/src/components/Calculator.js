@@ -59,9 +59,9 @@ const Calculator = () => {
     setStockOptions([]);
     setQuery("");
     setDefaultValue("");
-    loadingStockOptions();
     setStockValue("");
     setOptionValue("");
+    loadingStockOptions();
     // setStockTitle('')
   }, []);
 

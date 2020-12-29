@@ -14,10 +14,8 @@ import { useHistory } from "react-router-dom";
 import Cookies from "js-cookie";
 import network from "../network/index";
 import { financial } from "../functions/helpers";
-import { userMoneyState } from "../recoil/Atom";
-import { useRecoilState } from "recoil";
 import { useEffect, useState } from "react";
-import UpdateMoney from './UpdateMoney'
+import UpdateMoney from "./UpdateMoney";
 
 export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   const [auth, setAuth] = React.useState(true);
@@ -25,13 +23,20 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   const open = Boolean(anchorEl);
   const { userValue } = React.useContext(AuthApi);
   const [currentUser, setCurrentUser] = userValue;
-  const [userMoney, setUserMoney] = useRecoilState(userMoneyState);
-  const [openModal, setOpenModal] = useState(false)
+  const [openModal, setOpenModal] = useState(false);
   const history = useHistory();
 
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
+  const getUserInfo = useCallback(async () => {
+    try {
+      const { data } = await network.get("/users/info");
+      if (data.cash === 0) {
+        setOpenModal(true);
+      }
+      setCurrentUser(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
   const handleMenu = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -44,24 +49,6 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   const handleProfile = useCallback(() => {
     setAnchorEl(null);
     history.push("/profile");
-  }, []);
-
-  const fetchUserMoney = useCallback(async () => {
-    try {
-      const {
-        data: { cash },
-      } = await network.get("/transactions/money");
-      const { data } = await network.get("/transactions/investments");
-      setUserMoney({
-        cash: cash,
-        investments: financial(data[0].currentPrice / 100),
-      });
-      if (cash == 0){
-       setOpenModal(true) 
-      }
-    } catch (err) {
-      console.error(err);
-    }
   }, []);
 
   const handleLogout = useCallback(async () => {
@@ -83,7 +70,7 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   }, []);
 
   useEffect(() => {
-    fetchUserMoney();
+    getUserInfo();
   }, []);
 
   return (
@@ -112,17 +99,17 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
           justify="center"
           alignItems="flex-start"
         >
-          <Grid item xs={6} sm={5}>
+          <Grid item xs={4} sm={5}>
             {/* <Typography className={classes.title}>total money</Typography> */}
           </Grid>
-          <Grid item xs={6} sm={2}>
+          <Grid item xs={4} sm={2}>
             <Typography className={classes.title}>
-              cash: {userMoney.cash}
+              cash: {currentUser.cash}
             </Typography>
           </Grid>
-          <Grid item xs={6} sm={2}>
+          <Grid item xs={4} sm={2}>
             <Typography className={classes.title}>
-              investments: {userMoney.investments}
+              investments: {financial(currentUser.investments)}
             </Typography>
           </Grid>
         </Grid>
@@ -136,6 +123,7 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
               color="inherit"
             >
               <AccountCircle />
+              <Typography>&nbsp;{currentUser.username}</Typography>
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -158,7 +146,13 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
           </div>
         )}
       </Toolbar>
-      <UpdateMoney setOpen={setOpenModal} open={openModal} />
+      {openModal && (
+        <UpdateMoney
+          getUserInfo={getUserInfo}
+          setOpen={setOpenModal}
+          open={openModal}
+        />
+      )}
     </AppBar>
     // </div>
   );
