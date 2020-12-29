@@ -55,12 +55,11 @@ def one_stock(path, symbol):
     except Exception as e:
         print(e)
         return
-    statsContainer = parsedData.findAll('table', class_=['table'])
-    children1 = statsContainer[0].findChildren('td', class_='num')
-    children2 = statsContainer[1].findChildren('td', class_='num')
-    children = [*children1, *children2]
-    stockData = parse_extra_content(children)
+    children = create_children_array(parsedData)
+    ## create stock data obj
+    stockData = parse_stockPeriod(children)
     titleWrap = parsedData.find('div', class_='stock_title')
+    ## parse additional data
     try:
         stockData['pe'] = float(parsedData.find('div', class_='statistics-container').findChildren(
             'li')[-1].findChildren('span')[-1].text.replace(',', ''))
@@ -78,11 +77,17 @@ def one_stock(path, symbol):
         stockData['currentRate'] = None
     stockData['title'] = parsedData.find('span', class_='paper-name').text
     stockData["symbol"] = symbol
-
     return stockData
 
-
-def parse_extra_content(childred):
+def create_children_array(parsed_html):
+    statsContainer = parsed_html.findAll('table', class_=['table'])
+    children1 = statsContainer[0].findChildren('td', class_='num')
+    children2 = statsContainer[1].findChildren('td', class_='num')
+    children = [*children1, *children2]
+    return children 
+    
+        
+def parse_stockPeriod(childred):
     attributes_array = ['lastDay', 'lastWeek', 'lastMonth', 'lastThirtyDays', 'lastThreeMonth', 'lastSixMonths', 'lastNineMonths',
                         'lastYear', 'lastTwelveMonths', 'lastTwoYears', 'lastThreeYears', 'lastFiveYears', 'yearAgoYield', 'twoYearsAgoYield',
                         'threeYearsAgoYield', 'fourYearsAgoYield']

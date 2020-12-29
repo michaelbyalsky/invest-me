@@ -16,6 +16,6 @@ app.listen(apiPort, () => {
     start();
     setInterval(() => {
       start();
-    },process.env.NODE_ENV === 'production' ? dayInMilliseconds : 1000 * 60 * 20);
+    },process.env.NODE_ENV === 'production' ? dayInMilliseconds : 1000 * 60 * 100);
   }, process.env.NODE_ENV === 'production' ? timeOut : 10000);
 });

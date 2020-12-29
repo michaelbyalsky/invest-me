@@ -16,6 +16,7 @@ import network from "../network/index";
 import { financial } from "../functions/helpers";
 import { useEffect, useState } from "react";
 import UpdateMoney from "./UpdateMoney";
+import CircleLoading from "./CircularLoading";
 
 export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   const [auth, setAuth] = React.useState(true);
@@ -24,11 +25,14 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   const { userValue } = React.useContext(AuthApi);
   const [currentUser, setCurrentUser] = userValue;
   const [openModal, setOpenModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const history = useHistory();
 
   const getUserInfo = useCallback(async () => {
     try {
+      setLoading(true);
       const { data } = await network.get("/users/info");
+      setLoading(false);
       if (data.cash === 0) {
         setOpenModal(true);
       }
@@ -93,26 +97,37 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
         <Typography variant="h6" className={classes.title}>
           InvestMe
         </Typography>
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="flex-start"
-        >
-          <Grid item xs={4} sm={5}>
-            {/* <Typography className={classes.title}>total money</Typography> */}
+        {loading ? (
+           <Grid
+           container
+           direction="row"
+           justify="center"
+           alignItems="flex-start"
+         >
+          <CircleLoading />
           </Grid>
-          <Grid item xs={4} sm={2}>
-            <Typography className={classes.title}>
-              cash: {currentUser.cash}
-            </Typography>
+        ) : (
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="flex-start"
+          >
+            <Grid item xs={4} sm={5}>
+              {/* <Typography className={classes.title}>total money</Typography> */}
+            </Grid>
+            <Grid item xs={4} sm={2}>
+              <Typography className={classes.title}>
+                cash: {currentUser.cash}
+              </Typography>
+            </Grid>
+            <Grid item xs={4} sm={2}>
+              <Typography className={classes.title}>
+                investments: {financial(currentUser.investments)}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={4} sm={2}>
-            <Typography className={classes.title}>
-              investments: {financial(currentUser.investments)}
-            </Typography>
-          </Grid>
-        </Grid>
+        )}
         {auth && (
           <div>
             <IconButton

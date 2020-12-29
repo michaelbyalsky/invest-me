@@ -9,6 +9,10 @@ services:
     hostname: scrapper     
     networks:
       - backend
+    volumes:
+      - type: bind
+        source: ./scrapper/app
+        target: /app  
 
   server:
     hostname: server 
