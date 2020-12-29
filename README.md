@@ -35,7 +35,7 @@ Second Tab:
 $ cd scrapper/app && python main.py
 ```
 
-(optional) Third:
+Third Tab:
 ```sh
 $ cd server && npm run dev
 ```
