@@ -80,9 +80,9 @@ Router.post("/all", async (req, res) => {
       });
     } else {
       data = await BigStockData.findAll({
-        // attributes: {
-        //   exclude: ["createdAt", "updatedAt"],
-        // },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
       });
     }
     res.json(data);
