@@ -27,17 +27,17 @@ Open 3 tabs of your favorite Terminal and run these commands.
 
 First Tab:
 ```sh
-$ cd client && npm start
+$ cd client && npm i && npm start
 ```
 
 Second Tab:
 ```sh
-$ cd scrapper/app && python main.py
+$ cd scrapper && pip install requirements.txt && cd app && python main.py
 ```
 
 Third Tab:
 ```sh
-$ cd server && npm run dev
+$ cd server && npm i && npm run dev
 ```
 
 ### Docker
