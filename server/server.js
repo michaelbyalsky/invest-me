@@ -1,12 +1,12 @@
 const { start } = require("./scrapperEvent");
 const moment = require("moment");
+const app = require("./app");
 
 const endOfDay = moment().endOf("day").valueOf();
 const now = moment().valueOf();
 const timeOut = endOfDay - now;
 const dayInMilliseconds = 1000 * 60 * 60 * 24
 
-const app = require("./app");
 
 const apiPort = process.env.SERVER_PORT || 5000;
 
