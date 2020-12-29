@@ -40,13 +40,6 @@ Third Tab:
 $ cd server && npm i && npm run dev
 ```
 
-### Docker
-To check the all system is running in containers run the following command:
-```sh
-docker-compose up
-```
-This will ship your application locally in docker.
-
 ### Todos
 
  - Write MORE Tests
