@@ -1,9 +1,9 @@
 const Router = require("express").Router();
 const { registerValidation, loginValidation } = require("./validation");
 const bcrypt = require("bcryptjs");
-const { User, RefreshToken } = require("../../models");
+const { User, RefreshToken, UserMoney } = require("../../models");
 const jwt = require("jsonwebtoken");
-const verifyToken = require("../../middelware/checkToken")
+const verifyToken = require("../../middelware/checkToken");
 require("dotenv").config();
 
 function generateToken(user) {
@@ -65,7 +65,9 @@ Router.post("/login", async (req, res, next) => {
   try {
     const validation = loginValidation(req.body);
     if (validation.error) {
-      return res.status(400).json({message: validation.error.details[0].message});
+      return res
+        .status(400)
+        .json({ message: validation.error.details[0].message });
     }
     const count = await User.count({
       where: {
@@ -91,7 +93,8 @@ Router.post("/login", async (req, res, next) => {
       const token = generateToken(infoForToken);
       const refreshToken = jwt.sign(
         { id: result.id, username: result.username },
-        process.env.REFRESH_TOKEN_SECRET, { expiresIn: req.body.rememberMe ? "365d" : "1d" }
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: req.body.rememberMe ? "365d" : "1d" }
       );
       const isTokenExist = await RefreshToken.findOne({
         where: {
@@ -131,7 +134,9 @@ Router.post("/register", async (req, res, next) => {
   try {
     const validation = registerValidation(req.body);
     if (validation.error) {
-      return res.status(400).json({message: validation.error.details[0].message});
+      return res
+        .status(400)
+        .json({ message: validation.error.details[0].message });
     }
     const countEmail = await User.count({
       where: {
@@ -152,7 +157,7 @@ Router.post("/register", async (req, res, next) => {
     //hash
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
-    const register = await User.create({
+    await User.create({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       username: req.body.username,
@@ -161,6 +166,14 @@ Router.post("/register", async (req, res, next) => {
       password: hashedPassword,
       permission: req.body.permission === "admin" ? "admin" : "user",
     });
+    const user = await User.findOne({
+      attributes: ["id"],
+      where: {
+        username: req.body.username,
+      },
+    });
+    await UserMoney.create({ userId: user.id, cash: 0 });
+    // await UserMoney.create
     res.status(201).json({ message: "success" });
   } catch (err) {
     console.log(err);

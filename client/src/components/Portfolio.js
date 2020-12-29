@@ -8,12 +8,13 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import network from "../network/index";
 import AsyncSelect from "react-select/async";
-import Typography from "@material-ui/core/Typography";
 import StocksTable from "./StocksTable";
 import { financial } from "../functions/helpers";
 import { useStyles } from "./PortfolioStyles";
 import GenericTable from "./GenericTable";
-import Loading from './Loading'
+import SmallLoading from "./SmallLoading";
+import Loading from "./Loading";
+import AuthApi from "../contexts/Auth";
 
 const usersHeaders = [
   "username",
@@ -24,9 +25,9 @@ const usersHeaders = [
 ];
 
 export default function Portfolio() {
+  const { userValue } = React.useContext(AuthApi);
+  const [currentUser, setCurrentUser] = userValue;
   const classes = useStyles();
-  const [cash, setCash] = useState(0);
-  const [investments, setInvestments] = useState(0);
   const [open, setOpen] = useState(false);
   const [openSell, setOpenSell] = useState(false);
   const [query, setQuery] = useState("");
@@ -44,10 +45,12 @@ export default function Portfolio() {
   const [sellError, setSellError] = useState("");
   const [userProfit, setUserProfit] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingBuy, setLoadingBuy] = useState(false);
+  const [loadingSell, setLoadingSell] = useState(false);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = useCallback(() => {
     setOpen(true);
-  };
+  }, []);
 
   const handleCloseSell = useCallback(() => {
     setOpenSell(false);
@@ -68,30 +71,20 @@ export default function Portfolio() {
 
   useEffect(() => {
     fetchAllStocks();
-    fetchUserProfit();
+    getUserInfo();
+    getUserPortfolio();
+    fetchUserProfit()
   }, []);
 
   // useEffect(() => {
   //   searchStocks();
   // }, [query]);
 
-  const fetchUserMoney = useCallback(async () => {
+  const getUserInfo = useCallback(async () => {
     try {
-      const {
-        data: { cash },
-      } = await network.get("/transactions/money");
-      const { data } = await network.get("/transactions/investments");
-      setCash(cash);
-      setInvestments(financial(data[0].currentPrice / 100));
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
-
-  const getUserPortfolio = useCallback(async () => {
-    try {
-      const { data } = await network.get("/transactions");
-      setRows(data);
+      const { data } = await network.get("/users/info");
+      setLoading(false);
+      setCurrentUser(data);
     } catch (err) {
       console.error(err);
     }
@@ -102,6 +95,15 @@ export default function Portfolio() {
       const { data } = await network.get("transactions/user-profit");
       setUserProfit(data);
       setLoading(false)
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  const getUserPortfolio = useCallback(async () => {
+    try {
+      const { data } = await network.get("/transactions");
+      setRows(data);
     } catch (err) {
       console.error(err);
     }
@@ -121,13 +123,19 @@ export default function Portfolio() {
         buyPrice: price,
         buyAmount: Number(amount),
       };
+      setLoadingBuy(true);
       const { data } = await network.post("/transactions", obj);
+      setLoadingBuy(false);
+      getUserInfo();
       getUserPortfolio();
+      fetchUserProfit()
       setStockToUpdate("");
       setPrice("");
       setAmount(0);
       setOpen(false);
     } catch (err) {
+      setBuyError("system Error");
+      setLoadingBuy(false);
       console.error(err);
     }
   }, [stockToUpdate, price, amount]);
@@ -162,12 +170,18 @@ export default function Portfolio() {
         negative: ifNegative,
         sellPrice: sellPrice,
       };
+      setLoadingSell(true);
       const { data } = await network.patch("/transactions", obj);
+      setLoadingSell(false);
       setStockForSell("");
       setStockSellAmount(0);
+      getUserInfo();
+      fetchUserProfit()
       getUserPortfolio();
       setOpenSell(false);
     } catch (err) {
+      setLoadingSell(false);
+      setSellError("system error");
       console.error(err);
     }
   }, [sellPrice, ifNegative, stockForSell, stockSellAmount, currentAmount]);
@@ -175,7 +189,7 @@ export default function Portfolio() {
   const onPressSell = useCallback((value) => {
     setCurrentAmount(value.currentAmount);
     setStockForSell(value.symbol);
-    setSellPrice(value.lastRate)
+    setSellPrice(value.lastRate);
     if (value.yield < 0) {
       setIfNegative(true);
     } else {
@@ -194,13 +208,8 @@ export default function Portfolio() {
     setValue(value.lable);
   }, []);
 
-  useEffect(() => {
-    fetchUserMoney();
-    getUserPortfolio();
-  }, []);
-
-  if(loading){
-    return  <Loading color={"blue"} type={"spin"}/>
+  if (loading) {
+    return <Loading type={"spin"} color={"blue"} height={333} width={185} />;
   }
 
   return (
@@ -210,7 +219,7 @@ export default function Portfolio() {
           <TextField
             label="Cash"
             id="outlined-margin-dense"
-            value={cash}
+            value={currentUser.cash}
             className={classes.textField}
             margin="dense"
             variant="outlined"
@@ -221,7 +230,7 @@ export default function Portfolio() {
           <TextField
             label="Investments"
             id="outlined-margin-dense"
-            value={investments}
+            value={financial(currentUser.investments)}
             className={classes.textField}
             margin="dense"
             variant="outlined"
@@ -246,34 +255,36 @@ export default function Portfolio() {
           </DialogTitle>
           <DialogContent>
             <DialogContentText>{sellError}</DialogContentText>
-            <TextField
-              label="price"
-              id="outlined-margin-dense"
-              value={sellPrice}
-              className={classes.textField}
-              helperText="stock sell amount"
-              margin="dense"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setSellPrice(e.target.value)}
-            />
-            <TextField
-              label="amount"
-              id="outlined-margin-dense"
-              value={stockSellAmount}
-              className={classes.textField}
-              helperText="stock sell amount"
-              margin="amount"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setStockSellAmount(e.target.value)}
-            />
+            <div className={classes.actions}>
+              <TextField
+                id="outlined-margin-dense"
+                value={sellPrice}
+                className={classes.textField}
+                helperText="stock sell price"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setSellPrice(e.target.value)}
+              />
+              <TextField
+                id="outlined-margin-dense"
+                value={stockSellAmount}
+                className={classes.textField}
+                helperText="stock sell amount"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setStockSellAmount(e.target.value)}
+              />
+            </div>
             {sellError && (
               <div>
                 <label style={{ color: "red" }}>{sellError}</label>
               </div>
             )}
+            {loadingSell && <SmallLoading />}
           </DialogContent>
+
           <DialogActions>
             <Button autoFocus onClick={handleCloseSell} color="primary">
               Cancel
@@ -307,34 +318,41 @@ export default function Portfolio() {
               onInputChange={handleInputChange}
               loadOptions={loadingOption}
             />
-            <TextField
-              label="Dense"
-              id="outlined-margin-dense"
-              value={amount}
-              className={classes.textField}
-              helperText="stock amount"
-              margin="dense"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <TextField
-              label="price"
-              id="outlined-margin-dense"
-              value={price}
-              className={classes.textField}
-              helperText="stock buying price"
-              margin="dense"
-              variant="outlined"
-              type="number"
-              onChange={(e) => setPrice(e.target.value)}
-            />
-            {buyError && (
-              <div>
-                <label style={{ color: "red" }}>{buyError}</label>
-              </div>
-            )}
+            <div className={classes.actions}>
+              <TextField
+                id="outlined-margin-dense"
+                value={amount}
+                className={classes.textField}
+                helperText="stock amount"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setAmount(e.target.value)}
+              />
+              <TextField
+                id="outlined-margin-dense"
+                value={price}
+                className={classes.textField}
+                helperText="stock buying price"
+                margin="dense"
+                variant="outlined"
+                type="number"
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
           </DialogContent>
+          {buyError && (
+            <div
+              style={{
+                color: "red",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <label>{buyError}</label>
+            </div>
+          )}
+          {loadingBuy && <SmallLoading />}
           <DialogActions>
             <Button autoFocus onClick={handleClose} color="primary">
               Cancel

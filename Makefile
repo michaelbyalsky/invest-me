@@ -64,6 +64,8 @@ start-app:
 			-e DB_USER=${DB_USER} \
 			-e DB_PASS=${DB_PASS} \
 			-e SERVER_PORT=${SERVER_PORT} \
+			-e SCRAPPER_HOST=${SCRAPPER_CONTAINER_NAME} \
+			-e SCRAPPER_PORT=${SCRAPPER_PORT} \
 			--env-file=.env \
 			-p ${SERVER_PORT}:${SERVER_PORT} \
 			$(REMOTE_TAG) \
@@ -74,6 +76,7 @@ start-scrapper:
 		docker run -d --name=$(SCRAPPER_CONTAINER_NAME) \
 			--restart=unless-stopped \
 			--network=$(NETWORK_NAME) \
+			-p ${SCRAPPER_PORT}:${SCRAPPER_PORT} \
 			$(REMOTE_TAG_SCRAPPER) \
 			'
 

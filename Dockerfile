@@ -22,7 +22,7 @@ COPY ./server .
 
 COPY --from=builder ./client/build ./build
 
-EXPOSE 5001
+EXPOSE 81
 
 # ENV DOCKERIZE_VERSION v0.6.0
 

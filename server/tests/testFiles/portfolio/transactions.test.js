@@ -90,7 +90,6 @@ describe("testing transactions endpoints", () => {
         userId: mockUser[0].id,
       },
     });
-    console.log(moneyAfterBuy.cash);
     expect(
       financial(
         moneyBeforeBuy.cash -
@@ -108,8 +107,6 @@ describe("testing transactions endpoints", () => {
       .set("authorization", `bearer ${generateToken(mockUser[0])}`)
       .send(initialStocks[2]);
     expect(profitAfterSell.status).toBe(200);
-
-    console.log(initialStocks[2]);
     const allUserStocksAfterSell = await request(app)
       .get("/api/v1/transactions")
       .set("authorization", `bearer ${generateToken(mockUser[0])}`);

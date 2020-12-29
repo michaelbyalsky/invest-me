@@ -6,7 +6,6 @@ import AuthApi from "../contexts/Auth";
 import Grid from "@material-ui/core/Grid";
 import React, { useCallback } from "react";
 import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
@@ -14,21 +13,30 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { useHistory } from "react-router-dom";
 import Cookies from "js-cookie";
 import network from "../network/index";
+import { financial } from "../functions/helpers";
+import { useEffect, useState } from "react";
+import UpdateMoney from "./UpdateMoney";
 
-export default function Header({
-  classes,
-  handleDrawerOpen,
-  drawerOpen,
-}) {
+export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { userValue } = React.useContext(AuthApi);
   const [currentUser, setCurrentUser] = userValue;
+  const [openModal, setOpenModal] = useState(false);
   const history = useHistory();
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
+
+  const getUserInfo = useCallback(async () => {
+    try {
+      const { data } = await network.get("/users/info");
+      if (data.cash === 0) {
+        setOpenModal(true);
+      }
+      setCurrentUser(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
   const handleMenu = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -61,6 +69,10 @@ export default function Header({
     }
   }, []);
 
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
   return (
     <AppBar
       position="fixed"
@@ -87,14 +99,18 @@ export default function Header({
           justify="center"
           alignItems="flex-start"
         >
-          <Grid item xs={6} sm={3}>
-            {/* <Typography className={classes.title}>cash</Typography> */}
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            {/* <Typography className={classes.title}>investments</Typography> */}
-          </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={4} sm={5}>
             {/* <Typography className={classes.title}>total money</Typography> */}
+          </Grid>
+          <Grid item xs={4} sm={2}>
+            <Typography className={classes.title}>
+              cash: {currentUser.cash}
+            </Typography>
+          </Grid>
+          <Grid item xs={4} sm={2}>
+            <Typography className={classes.title}>
+              investments: {financial(currentUser.investments)}
+            </Typography>
           </Grid>
         </Grid>
         {auth && (
@@ -107,6 +123,7 @@ export default function Header({
               color="inherit"
             >
               <AccountCircle />
+              <Typography>&nbsp;{currentUser.username}</Typography>
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -129,6 +146,13 @@ export default function Header({
           </div>
         )}
       </Toolbar>
+      {openModal && (
+        <UpdateMoney
+          getUserInfo={getUserInfo}
+          setOpen={setOpenModal}
+          open={openModal}
+        />
+      )}
     </AppBar>
     // </div>
   );

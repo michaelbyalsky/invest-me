@@ -24,13 +24,13 @@ Router.get("/by-symbol/:symbol", async (req, res) => {
   try {
     const data = await Stock.findOne({
       attributes: {
-        exclude: ["createdAt", "updatedAt", "link"]
+        exclude: ["createdAt", "updatedAt", "link"],
       },
       where: {
         symbol: req.params.symbol,
       },
     });
-    res.json(data)
+    res.json(data);
   } catch (err) {
     console.log(err);
   }
@@ -80,9 +80,9 @@ Router.post("/all", async (req, res) => {
       });
     } else {
       data = await BigStockData.findAll({
-        attributes: {
-          exclude: ["createdAt, updatedAt"],
-        },
+        // attributes: {
+        //   exclude: ["createdAt", "updatedAt"],
+        // },
       });
     }
     res.json(data);
@@ -138,9 +138,7 @@ Router.get("/one-stock-data/:symbol", async (req, res) => {
   try {
     const linkAddress = `https://www.bizportal.co.il/realestates/quote/performance/${req.params.symbol}`;
     try {
-      const { data } = await network.get(
-        `/one-stock/?q=${linkAddress}`
-      );
+      const { data } = await network.get(`/one-stock/?q=${linkAddress}`);
       const updated = await BigStockData.update(data, {
         where: {
           symbol: data.symbol,
@@ -165,7 +163,6 @@ Router.get("/one-stock-data/:symbol", async (req, res) => {
           symbol: req.params.symbol,
         },
       });
-
       res.json(stock);
     }
   } catch (err) {

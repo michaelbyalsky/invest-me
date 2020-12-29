@@ -4,7 +4,7 @@ services:
   scrapper:
     build:
       context: .
-      dockerfile: Dockerfile.scrapper.dev
+      dockerfile: Dockerfile.scrapper
     container_name: scrapper
     hostname: scrapper     
     networks:
@@ -22,7 +22,7 @@ services:
       - type: bind
         source: ./server
         target: /app
-    # command: sh -c '/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
+    #  command: sh -c '/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
     environment:
       - DB_PASS=test
       - DB_USER=root

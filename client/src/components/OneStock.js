@@ -4,6 +4,7 @@ import network from "../network/index";
 import StockByPeriod from "./StockByPeriod";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { startCase } from "lodash";
+import Loading from './Loading'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,22 +13,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 export default function OneStock() {
   const params = useParams();
   const [stock1, setStock1] = useState();
   const [stockMeta1, setStockMeta1] = useState();
+  const [loading, setLoading] = useState(true)
   const classes = useStyles();
   const fetchOneStock = useCallback(async () => {
     try {
       const { data: period } = await network.get(
         `/stocks/one-stock-data/${params.symbol}`
       );
-
       const array = Object.entries(period).map((arr) => ({
         period: startCase(arr[0]),
         yield: arr[1],
       }));
       setStock1(array);
+      setLoading(false)
     } catch (err) {
       console.error(err);
     }
@@ -48,6 +51,10 @@ export default function OneStock() {
     fetchOneStock();
     fetchStockMeta();
   }, []);
+
+if (loading) {
+  return <Loading type={"spin"} color={"blue"} height={333} width={185} />
+}
 
   return (
     <div className={classes.root}>

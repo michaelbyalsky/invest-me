@@ -57,7 +57,7 @@ export default function Competition() {
   }, []);
 
   if(loading){
-    return <Loading type={"spin"} color={"blue"} />
+    return <Loading type={"spin"} color={"blue"} height={333} width={185} />
   }
   
   return (

@@ -83,7 +83,7 @@ export default function BigDataList() {
   }, [selectValues]);
   
   if(loading){
-    return <Loading type={"spin"} color={"blue"} />
+    return <Loading type={"spin"} color={"blue"} height={333} width={185}  />
   }
   
   

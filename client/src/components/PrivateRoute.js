@@ -1,30 +1,39 @@
-import React, { useEffect } from "react";
-import { Route, Redirect } from "react-router-dom";
+import React, { useEffect, useCallback, useState } from "react";
+import { Route, Redirect, useHistory } from "react-router-dom";
 // import { useAuth } from '../contexts/AuthContext'
 import AuthApi from "../contexts/Auth";
 import Cookies from "js-cookie";
-import { useHistory, Link } from "react-router-dom";
+import network from "../network/index";
 
 export default function PrivateRoute({ component: Component, ...rest }) {
   // const { currentUser } = useAuth()
   const { userValue } = React.useContext(AuthApi);
   const [currentUser, setCurrentUser] = userValue;
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
 
+  const getUserInfo = useCallback(async () => {
+    try {
+      const { data } = await network.get("/users/info");
+      setLoading(false);
+      setCurrentUser(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   useEffect(() => {
+    getUserInfo();
     let rememberMeValue = Cookies.get("rememberMe");
     let token = Cookies.get("accessToken");
     if (token && rememberMeValue) {
-      setCurrentUser({
-        id: Cookies.get("userId"),
-        username: Cookies.get("username"),
-      });
+      return;
     } else {
-      Cookies.remove('accessToken')
-      Cookies.remove('refreshToken')
-      Cookies.remove('userId');
-      Cookies.remove('username');
-      Cookies.remove('rememberMe');
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      Cookies.remove("userId");
+      Cookies.remove("username");
+      Cookies.remove("rememberMe");
       history.push("/login");
     }
   }, []);

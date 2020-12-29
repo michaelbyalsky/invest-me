@@ -9,7 +9,7 @@ Router.get("/money", async (req, res) => {
   try {
     const userMoney = await UserMoney.findOne({
       where: {
-        id: req.user.id,
+        userId: req.user.id,
       },
     });
     res.json(userMoney);

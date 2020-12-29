@@ -28,5 +28,6 @@ module.exports = {
     host: process.env.DB_HOST || 'localhost',
     dialect: 'mysql',
     define: { underscored: true },
+    logging: false,
   },
 };
