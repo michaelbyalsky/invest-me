@@ -12,6 +12,7 @@ const apiPort = process.env.SERVER_PORT || 5000;
 
 app.listen(apiPort, () => {
   console.log(`app listening on port ${apiPort}`);
+  start();
   setTimeout(() => {
     start();
     setInterval(() => {

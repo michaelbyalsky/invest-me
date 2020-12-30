@@ -14,18 +14,15 @@ services:
         source: ./scrapper/app
         target: /app  
 
-  server:
-    hostname: server 
-    container_name: server
+  node-api:
+    hostname: node-api 
+    container_name: node-api
     build:
       context: "./"
       dockerfile: Dockerfile
     ports:
       - "81:81"
-    volumes:
-      - type: bind
-        source: ./server
-        target: /app
+      
     #  command: sh -c '/app/wait_for_it.sh mysql:3306 && /start-reload.sh'
     environment:
       - DB_PASS=test

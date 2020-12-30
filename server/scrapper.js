@@ -1,9 +1,9 @@
 const { BigStockData } = require("./models");
-const axios = require("axios");
+const { network } = require("./network");
 
 (async () => {
     try {
-      const { data } = await axios.get("http://localhost:8000/all-symbols");
+      const { data } = await network.get("/all-symbols");
       const keys = Object.keys(data);
       await BigStockData.destroy({ truncate: true, force: true });
       const new_stocks = await BigStockData.bulkCreate(data);
