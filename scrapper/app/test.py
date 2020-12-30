@@ -14,7 +14,7 @@ def test_stocks_list():
     response = client.get("/stocks-list")
     assert response.status_code == 200
     stocks = response.json()
-    assert len(stocks) == 454 
+    assert len(stocks) == 458 
 
 
 # def test_all_symbols():
@@ -28,4 +28,4 @@ def test_one_stock():
     response = client.get("/one-stock/")
     assert response.status_code == 200
     stocks = response.json()
-    assert len(stocks) == 454     
+    assert len(stocks) == 458     

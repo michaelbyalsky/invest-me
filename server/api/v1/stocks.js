@@ -20,6 +20,7 @@ Router.post("/all-data", async (req, res) => {
   }
 });
 
+// get stock by it's symbol
 Router.get("/by-symbol/:symbol", async (req, res) => {
   try {
     const data = await Stock.findOne({
@@ -36,6 +37,7 @@ Router.get("/by-symbol/:symbol", async (req, res) => {
   }
 });
 
+// update all stocks fir realtime experience
 Router.get("/stocks-array", async (req, res) => {
   try {
     const { data } = await network.get("/stocks-list");
@@ -48,6 +50,7 @@ Router.get("/stocks-array", async (req, res) => {
   }
 });
 
+// search for certain stock 
 Router.get("/search", async (req, res) => {
   try {
     const data = await Stock.findAll({
@@ -64,6 +67,8 @@ Router.get("/search", async (req, res) => {
   }
 });
 
+
+// get all stock big data by certain attribute
 Router.post("/all", async (req, res) => {
   try {
     const customAttributes = req.body;
@@ -91,6 +96,7 @@ Router.post("/all", async (req, res) => {
   }
 });
 
+// get top stocks by certain attribute
 Router.post("/top-stocks", async (req, res) => {
   try {
     const { atr } = req.body;
@@ -105,6 +111,7 @@ Router.post("/top-stocks", async (req, res) => {
   }
 });
 
+// get standard data of all stocks
 Router.get("/all-regular", async (req, res) => {
   try {
     const data = await Stock.findAll();
@@ -114,6 +121,7 @@ Router.get("/all-regular", async (req, res) => {
   }
 });
 
+// get all stocks periods
 Router.get("/periods", async (req, res) => {
   try {
     const data = Object.keys(BigStockData.rawAttributes);
@@ -134,6 +142,7 @@ Router.get("/periods", async (req, res) => {
   }
 });
 
+// get all one stock data- and update it in the DB
 Router.get("/one-stock-data/:symbol", async (req, res) => {
   try {
     const linkAddress = `https://www.bizportal.co.il/realestates/quote/performance/${req.params.symbol}`;

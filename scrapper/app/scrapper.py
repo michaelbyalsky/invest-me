@@ -22,7 +22,7 @@ def parse_data(data):
     parsed = BeautifulSoup(data, 'html.parser')
     return parsed
 
-
+## get all israeli stocks from globes website
 def all_stocks():
     res = fetch_data(globes_url)
     if not res:
@@ -36,7 +36,7 @@ def all_stocks():
         stocksArray.append(stockData)
     return stocksArray
 
-
+## parse stock attribute
 def parse_stock_data(childred):
     symbol = childred[1].text
     title = childred[0].text
@@ -47,7 +47,7 @@ def parse_stock_data(childred):
     newStockObj = newStock.createObj()
     return newStockObj
 
-
+## parse one stock with it all attributes
 def one_stock(path, symbol):
     res = fetch_data(path)
     try:
@@ -79,6 +79,8 @@ def one_stock(path, symbol):
     stockData["symbol"] = symbol
     return stockData
 
+
+## join attributes from two tables
 def create_children_array(parsed_html):
     statsContainer = parsed_html.findAll('table', class_=['table'])
     children1 = statsContainer[0].findChildren('td', class_='num')
@@ -86,7 +88,7 @@ def create_children_array(parsed_html):
     children = [*children1, *children2]
     return children 
     
-        
+## get all stock changes for certain period         
 def parse_stockPeriod(childred):
     attributes_array = ['lastDay', 'lastWeek', 'lastMonth', 'lastThirtyDays', 'lastThreeMonth', 'lastSixMonths', 'lastNineMonths',
                         'lastYear', 'lastTwelveMonths', 'lastTwoYears', 'lastThreeYears', 'lastFiveYears', 'yearAgoYield', 'twoYearsAgoYield',

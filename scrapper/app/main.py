@@ -10,6 +10,7 @@ app = FastAPI(title="StockMe API")
 async def hello():
     return {'msg': 'investMe api'}
 
+## get all stocks from israeli stock-market
 @app.get('/stocks-list')
 async def stock_list():
     stocks = all_stocks()
@@ -17,12 +18,14 @@ async def stock_list():
         return { "error": "error occurred"}
     return stocks
 
+## get one stock with it all attributes 
 @app.get('/one-stock/')
 async def get_one_stock(q: str):
     symbol = q.split('/')[-1]
     stock = one_stock(q, symbol)
     return stock
 
+## get all stocks with their all attributes
 @app.get('/all-symbols')
 async def get_all_data():
     allStocks = all_stocks()
