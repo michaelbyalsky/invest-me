@@ -18,7 +18,7 @@ import Profile from "./components/Profile";
 import Competition from "./components/Competition";
 import OneStock from "./components/OneStock";
 import Footer from "./components/Footer";
-import NotFound from './components/NotFound' 
+import NotFound from "./components/NotFound";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);

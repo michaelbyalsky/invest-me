@@ -10,6 +10,7 @@ function generateToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" });
 }
 
+// safe logout- destroy refresh token
 Router.post("/logout", async (req, res) => {
   try {
     const result = await RefreshToken.destroy({
@@ -30,6 +31,7 @@ Router.get("/validate-token", verifyToken, (req, res) => {
   res.json({ valid: true });
 });
 
+// generate new access token
 Router.post("/token", async (req, res) => {
   try {
     const refreshToken = req.body.token;
@@ -61,6 +63,7 @@ Router.post("/token", async (req, res) => {
   }
 });
 
+// login and generate new access token
 Router.post("/login", async (req, res, next) => {
   try {
     const validation = loginValidation(req.body);
@@ -130,6 +133,7 @@ Router.post("/login", async (req, res, next) => {
   }
 });
 
+// register user
 Router.post("/register", async (req, res, next) => {
   try {
     const validation = registerValidation(req.body);

@@ -5,6 +5,7 @@ const sequelize = require("sequelize");
 const { QueryTypes } = require("sequelize");
 const _ = require("lodash");
 
+// return user current cash
 Router.get("/money", async (req, res) => {
   try {
     const userMoney = await UserMoney.findOne({
@@ -18,6 +19,7 @@ Router.get("/money", async (req, res) => {
   }
 });
 
+// return all user trades
 Router.get("/trades", async (req, res) => {
   try {
     const userMoney = await userStock.findOne({
@@ -31,6 +33,7 @@ Router.get("/trades", async (req, res) => {
   }
 });
 
+// get the investments value of certain user
 Router.get("/investments", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
@@ -48,6 +51,7 @@ Router.get("/investments", async (req, res) => {
   }
 });
 
+// get all users profit
 Router.get("/all-users-profit", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
@@ -83,6 +87,7 @@ Router.get("/all-users-profit", async (req, res) => {
   }
 });
 
+// get logged in user profit
 Router.get("/user-profit", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
@@ -115,6 +120,7 @@ Router.get("/user-profit", async (req, res) => {
   }
 });
 
+// get logged in user portfolio
 Router.get("/", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
@@ -152,6 +158,7 @@ Router.get("/", async (req, res) => {
   }
 });
 
+// get all portfolios- for competition
 Router.get("/all-portfolios", async (req, res) => {
   try {
     const user = await UserStock.sequelize.query(
@@ -190,6 +197,7 @@ Router.get("/all-portfolios", async (req, res) => {
   }
 });
 
+// update user cash 
 Router.patch("/money", async (req, res) => {
   try {
     const hasPortfolio = await UserMoney.count({
@@ -214,6 +222,7 @@ Router.patch("/money", async (req, res) => {
   }
 });
 
+// update user money after buy stock
 Router.post("/", async (req, res) => {
   try {
     const obj = {

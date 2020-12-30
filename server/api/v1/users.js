@@ -2,6 +2,7 @@ const Router = require("express").Router();
 const { User, UserMoney, UserStock } = require("../../models");
 const { QueryTypes } = require("sequelize");
 
+// get all user info
 Router.get("/info", async (req, res) => {
   try {
     const userInfo = await User.findOne({
@@ -36,6 +37,7 @@ Router.get("/info", async (req, res) => {
   }
 });
 
+// update user cash
 Router.post("/update-cash", async (req, res) => {
   try {
     const { cash } = req.body;
@@ -63,6 +65,7 @@ Router.post("/update-cash", async (req, res) => {
   }
 });
 
+// update user info
 Router.post("/info", async (req, res) => {
   try {
     const { firstName, lastName, username, birthDate } = req.body;
