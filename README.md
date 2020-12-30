@@ -19,6 +19,10 @@ Open source app for Israeli investors- track the bests stocks in the Israeli mar
 - Python beautifullsoup, requests- web-scrapping.
 - jest- testing the app.
 
+### App architecture
+
+![App architecture](photos/App.png)
+
 ### Development
 
 Want to contribute? Great!
@@ -38,9 +42,6 @@ $ cd scrapper && pip install requirements.txt && cd app && python main.py
 Third Tab:
 ```sh
 $ cd server && npm i && npm run dev
-
-![App architecture](photos/App.png)
-
 ```
 
 ### Todos
