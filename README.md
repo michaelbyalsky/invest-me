@@ -38,6 +38,9 @@ $ cd scrapper && pip install requirements.txt && cd app && python main.py
 Third Tab:
 ```sh
 $ cd server && npm i && npm run dev
+
+![App architecture](photos/App.png)
+
 ```
 
 ### Todos
