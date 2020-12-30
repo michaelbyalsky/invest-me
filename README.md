@@ -4,13 +4,21 @@ Open source app for Israeli investors- track the bests stocks in the Israeli mar
 
 # Features
 
+## Filter the israeli market stocks as you wish
+  
   ![Filter the israeli market stocks as you wish](photos/sortstock.png)
   
-  ![Profit caculator](photos/caculator.png)
+## Profit caculator
+
+  ![Profit caculator](photos/calculator.png)
+
+## Demo traiding app for learning
 
   ![Demo traiding app for learning](photos/portfolio.png)
   
-  ![Traiding compatition](photos/caculator.png)
+## Traiding compatition
+
+  ![Traiding compatition](photos/compatition.png)
   
 # Technolegies
 
