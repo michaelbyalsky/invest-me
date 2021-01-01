@@ -57,7 +57,7 @@ def one_stock(path, symbol):
         return
     children = create_children_array(parsedData)
     ## create stock data obj
-    stockData = parse_stockPeriod(children)
+    stockData = parse_stock_period(children)
     titleWrap = parsedData.find('div', class_='stock_title')
     ## parse additional data
     try:
@@ -89,7 +89,7 @@ def create_children_array(parsed_html):
     return children 
     
 ## get all stock changes for certain period         
-def parse_stockPeriod(childred):
+def parse_stock_period(childred):
     attributes_array = ['lastDay', 'lastWeek', 'lastMonth', 'lastThirtyDays', 'lastThreeMonth', 'lastSixMonths', 'lastNineMonths',
                         'lastYear', 'lastTwelveMonths', 'lastTwoYears', 'lastThreeYears', 'lastFiveYears', 'yearAgoYield', 'twoYearsAgoYield',
                         'threeYearsAgoYield', 'fourYearsAgoYield']
