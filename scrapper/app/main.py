@@ -8,7 +8,7 @@ app = FastAPI(title="StockMe API")
 
 @app.get('/')
 async def hello():
-    return {'msg': 'investMe api'}
+    return {'msg': 'investMeApi'}
 
 ## get all stocks from israeli stock-market
 @app.get('/stocks-list')
