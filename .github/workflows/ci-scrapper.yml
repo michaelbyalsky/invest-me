@@ -4,9 +4,9 @@ name: CI-SCRAPPER
 
 on:
   pull_request:
-    branches: [main, dev] 
+    branches: [main] 
   push:
-    branches: [main, dev]
+    branches: [dev]
 
 jobs:
   test:
