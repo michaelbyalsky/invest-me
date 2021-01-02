@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 import uvicorn
 import sys
-from scrapper import all_stocks, one_stock
+from functions import all_stocks, one_stock
 import os
 
 app = FastAPI(title="StockMe API")

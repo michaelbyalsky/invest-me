@@ -4,8 +4,8 @@ COPY ./scrapper/requirements.txt .
 
 RUN pip install -r /requirements.txt
 
-COPY ./scrapper/app /app
+COPY ./scrapper/src /src
 
-WORKDIR /app
+WORKDIR /src
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4557"]

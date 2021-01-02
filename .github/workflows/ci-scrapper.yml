@@ -22,4 +22,6 @@ jobs:
         working-directory: ./scrapper
         run: |
           pip install -r requirements.txt
-      - run: pytest ./app/test.py
+      - name: run tests
+        working-directory: ./scrapper    
+        run: pytest test_*.py

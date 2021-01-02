@@ -30,13 +30,23 @@ def all_stocks():
     if not res:
         return
     parsed_data = parse_data(res.text)
-    table_rows = parsed_data.findAll('tr', class_='data')
+    table_rows = get_table_rows(parsed_data)
+    stocksArray = get_all_stocks_data(table_rows)
+    return stocksArray
+
+
+def get_all_stocks_data(table_rows):
     stocksArray = []
     for row in table_rows:
         children = row.findChildren('td')
         stockData = parse_stock_data(children)
         stocksArray.append(stockData)
     return stocksArray
+
+
+def get_table_rows(parsed_data):
+    table_rows = parsed_data.findAll('tr', class_='data')
+    return table_rows
 
 # parse stock attribute
 
@@ -56,23 +66,22 @@ def parse_stock_data(childred):
 
 def one_stock(path, symbol):
     res = fetch_data(path)
-    try:
-        parsedData = parse_data(res.text)
-    except Exception as e:
-        print(e)
+    if not res:
         return
+    parsedData = parse_data(res.text)
     stockData = {}
     children = create_children_array(parsedData)
     # create stock data obj
     stockData = parse_stock_period(stockData, children)
-    titleWrap = parsedData.find('div', class_='stock_title')
-    stockData = get_title_data(stockData, titleWrap)
+    stockData = get_title_data(parsedData, stockData)
     # parse additional data
-    stockData = get_stock_pe_and_title(stockData, parsedData)
+    stockData = get_stock_pe_and_title(parsedData, stockData)
     stockData["symbol"] = symbol
     return stockData
 
 # join attributes from two tables
+
+
 def create_children_array(parsed_html):
     statsContainer = parsed_html.findAll('table', class_=['table'])
     children1 = statsContainer[0].findChildren('td', class_='num')
@@ -81,7 +90,8 @@ def create_children_array(parsed_html):
     return children
 
 
-def get_title_data(stockData, titleWrap):
+def get_title_data(parsedData, stockData):
+    titleWrap = parsedData.find('div', class_='stock_title')
     try:
         stockData['dayChange'] = float(titleWrap.find(
             'span', class_=['percent']).text[0:-1].replace(',', ''))
@@ -95,7 +105,7 @@ def get_title_data(stockData, titleWrap):
     return stockData
 
 
-def get_stock_pe_and_title(stockData, parsedData):
+def get_stock_pe_and_title(parsedData, stockData):
     try:
         stockData['pe'] = float(parsedData.find('div', class_='statistics-container').findChildren(
             'li')[-1].findChildren('span')[-1].text.replace(',', ''))
@@ -104,7 +114,7 @@ def get_stock_pe_and_title(stockData, parsedData):
     try:
         stockData['title'] = parsedData.find('span', class_='paper-name').text
     except:
-        stockData['title'] = None        
+        stockData['title'] = None
     return stockData
 
 
