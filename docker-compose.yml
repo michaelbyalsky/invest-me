@@ -11,8 +11,8 @@ services:
       - backend
     volumes:
       - type: bind
-        source: ./scrapper/app
-        target: /app  
+        source: ./scrapper/src
+        target: /src  
 
   node-api:
     hostname: node-api 
