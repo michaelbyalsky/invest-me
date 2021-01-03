@@ -26,7 +26,7 @@ describe("Home page and side bar", () => {
     // open a chromium browser
     browser = await puppeteer.launch({
       slowMo: 45,
-      headless: false,
+      headless: true,
     });
     // open a new page within that browser
     page = await browser.newPage();
