@@ -26,26 +26,31 @@ const SideBar = ({
 
   const items = [
     {
+      testId:"home",
       path: "/",
       title: "Home",
       icon: <HomeIcon />,
     },
     {
+      testId:"allStocks",
       path: "/all-stocks",
       title: "all stocks",
       icon: <BarChartIcon />,
     },
     {
+      testId:"portfolio",
       path: "/portfolio",
       title: "portfolio",
       icon: <WorkIcon />,
     },
     {
+      testId:"competition",
       path: "/competition",
       title: "competition",
       icon: <GroupIcon />,
     },
     {
+      testId:"calculator",
       path: "/calculator",
       title: "calculator",
       icon: <TuneIcon />,
@@ -79,7 +84,7 @@ const SideBar = ({
       <List>
         {items.map((item, index) => (
           <Link to={item.path} push>
-            <ListItem button key={item}>
+            <ListItem testId={item.testId} button key={item}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.title} />
             </ListItem>

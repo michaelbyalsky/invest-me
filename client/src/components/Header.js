@@ -86,6 +86,7 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
     >
       <Toolbar>
         <IconButton
+        testId="openSideBar"
           color="inherit"
           aria-label="open drawer"
           onClick={handleDrawerOpen}

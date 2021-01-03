@@ -140,7 +140,7 @@ const Calculator = () => {
   }, [stockLink]);
 
   return (
-    <div className={classes.root}>
+    <div testId="calculatorContainer" className={classes.root}>
       <div className={classes.cash}>
         <TextField
           // isClearable={true}

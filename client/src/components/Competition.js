@@ -3,7 +3,7 @@ import network from "../network/index";
 import useStyles from "./CompetitionStyles";
 import StocksTable from "./StocksTable";
 import GenericTable from "./GenericTable";
-import Loading from './Loading'
+import Loading from "./Loading";
 
 const usersHeaders = [
   "username",
@@ -39,6 +39,9 @@ export default function Competition() {
 
   const joinedData = useCallback(async () => {
     Promise.all([fetchPortfolios(), fetchAllUsersProfit()]).then((ans) => {
+      if (ans[0] === undefined || ans[1] === undefined) {
+        return;
+      }
       const newArr = [];
       for (let i = 0; i < ans[0].length; i++) {
         for (let j = 0; j < ans[1].length; j++) {
@@ -48,20 +51,20 @@ export default function Competition() {
         }
       }
       setUsersData(newArr);
-      setLoading(false)
+      setLoading(false);
     });
   }, []);
-  
+
   useEffect(() => {
     joinedData();
   }, []);
 
-  if(loading){
-    return <Loading type={"spin"} color={"blue"} height={333} width={185} />
+  if (loading) {
+    return <Loading type={"spin"} color={"blue"} height={333} width={185} />;
   }
-  
+
   return (
-    <div className={classes.root}>
+    <div testId="competitionContainer" className={classes.root}>
       {usersData &&
         usersData.map((portfolio, i) => (
           <div className={classes.tableWrapper}>

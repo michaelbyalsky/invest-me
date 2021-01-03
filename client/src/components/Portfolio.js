@@ -240,7 +240,7 @@ export default function Portfolio() {
       </div>
       <div>
         <div className={classes.button}>
-          <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+          <Button testId="newStock" variant="outlined" color="primary" onClick={handleClickOpen}>
             new stock
           </Button>
         </div>

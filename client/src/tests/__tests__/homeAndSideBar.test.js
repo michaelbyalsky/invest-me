@@ -19,14 +19,14 @@ const cookies = [
 
 jest.setTimeout(15000);
 
-describe("Home page", () => {
+describe("Home page and side bar", () => {
   let page;
   let browser;
-  beforeEach(async () => {
+  beforeAll(async () => {
     // open a chromium browser
     browser = await puppeteer.launch({
       slowMo: 45,
-      headless: true,
+      headless: false,
     });
     // open a new page within that browser
     page = await browser.newPage();
@@ -38,18 +38,6 @@ describe("Home page", () => {
       height: 768,
     };
     await page.setViewport(screenSize);
-  });
-  afterAll(async () => {
-    // close the chromium after each test
-    await browser.close();
-  });
-
-  test("page has loading while there is no data", async () => {
-    await page.goto("http://localhost:3000");
-    await page.waitForSelector('[testId="reactLoading"]', { timeOut: 5000 });
-  });
-
-  test("Enter home page", async () => {
     await nock("http://localhost:3000", { allowUnmocked: true })
       .persist()
       .get("/api/v1/transactions/all-users-profit")
@@ -72,6 +60,18 @@ describe("Home page", () => {
       .get("/api/v1/users/info")
       // .query(() => true)
       .reply(200, headerMock);
+  });
+  afterAll(async () => {
+    // close the chromium after each test
+    // await browser.close();
+  });
+
+  test("page has loading while there is no data", async () => {
+    await page.goto("http://localhost:3000");
+    await page.waitForSelector('[testId="reactLoading"]', { timeOut: 5000 });
+  });
+
+  test("Enter home page", async () => {
     await page.goto("http://localhost:3000");
     await page.waitForSelector('[testId="topStocks"]', { timeOut: 10000 });
     await page.waitForSelector('[testId="topInvestors"]', { timeOut: 10000 });
@@ -81,5 +81,20 @@ describe("Home page", () => {
     await page.click('[testId="accountMenu"]');
     await page.waitForSelector('[testId="logout"]', { timeOut: 10000 });
     await page.waitForSelector('[testId="myAccount"]', { timeOut: 10000 });
+  });
+
+  test("Side bar", async () => {
+    await page.goto("http://localhost:3000");
+    await page.click('[testId="openSideBar"]');
+    await page.click('[testId="allStocks"]');
+    expect(page.url().includes("all-stocks")).toEqual(true);
+    await page.click('[testId="portfolio"]');
+    expect(page.url().includes("portfolio")).toEqual(true);
+    await page.click('[testId="competition"]');
+    expect(page.url().includes("competition")).toEqual(true);
+    await page.click('[testId="calculator"]');
+    expect(page.url().includes("calculator")).toEqual(true);
+    await page.click('[testId="home"]');
+    expect(page.url().includes("calculator")).toEqual(false);
   });
 });
