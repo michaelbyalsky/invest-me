@@ -25,5 +25,5 @@ jobs:
       run: npm start & npx wait-on http://localhost:3000
       working-directory: ./client
     - name: Run Client Tests
-      run:  npm run test -- --watchAll=false
+      run:  npx jest --coverage --detectOpenHandles --forceExit
       working-directory: ./client
