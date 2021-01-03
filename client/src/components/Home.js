@@ -79,8 +79,9 @@ export default function Home() {
       <div className={classes.section}>
         <div className={classes.topStocks}>
           <div className={classes.header}>
-            <h3 className={classes.headerTitle}>top stocks</h3>
+            <h3 testId="topStocks" className={classes.headerTitle}>top stocks</h3>
             <Select
+            testId="select"
               name="colors"
               defaultValue={selectValues}
               options={options}
@@ -101,7 +102,7 @@ export default function Home() {
         <div>
           <div>
             <div className={classes.topInvestors}>
-              <h3 className={classes.headerTitle}>Top investors</h3>
+              <h3 testId="topInvestors" className={classes.headerTitle}>Top investors</h3>
               <GenericTable
                 headers={usersHeaders}
                 rows={usersRows}

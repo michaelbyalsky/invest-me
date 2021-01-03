@@ -24,9 +24,8 @@ export default function PrivateRoute({ component: Component, ...rest }) {
 
   useEffect(() => {
     getUserInfo();
-    let rememberMeValue = Cookies.get("rememberMe");
     let token = Cookies.get("accessToken");
-    if (token && rememberMeValue) {
+    if (token) {
       return;
     } else {
       Cookies.remove("accessToken");

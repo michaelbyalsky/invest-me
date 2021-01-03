@@ -94,7 +94,7 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" className={classes.title}>
+        <Typography testId="title" variant="h6" className={classes.title}>
           InvestMe
         </Typography>
         {loading ? (
@@ -138,7 +138,7 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
               color="inherit"
             >
               <AccountCircle />
-              <Typography>&nbsp;{currentUser.username}</Typography>
+              <Typography testId="accountMenu">&nbsp;{currentUser.username}</Typography>
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -155,8 +155,8 @@ export default function Header({ classes, handleDrawerOpen, drawerOpen }) {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleLogout}>logout</MenuItem>
-              <MenuItem onClick={handleProfile}>My account</MenuItem>
+              <MenuItem testId="logout" onClick={handleLogout}>logout</MenuItem>
+              <MenuItem testId="myAccount" onClick={handleProfile}>My account</MenuItem>
             </Menu>
           </div>
         )}

@@ -14,7 +14,7 @@ export default function Loading({ type, color, height, width}) {
   const classes = useStyles();
 
   return (
-    <div className={classes.fullPage}>
+    <div testId="reactLoading" className={classes.fullPage}>
       <ReactLoading type={type} color={color} height={height} width={width} />
     </div>
   );

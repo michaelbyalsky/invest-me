@@ -98,6 +98,7 @@ Router.post("/all", async (req, res) => {
 
 // get top stocks by certain attribute
 Router.post("/top-stocks", async (req, res) => {
+  console.log(req.body);
   try {
     const { atr } = req.body;
     const data = await BigStockData.findAll({
