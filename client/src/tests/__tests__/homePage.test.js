@@ -41,7 +41,7 @@ describe("Home page", () => {
   });
   afterAll(async () => {
     // close the chromium after each test
-    // await browser.close();
+    await browser.close();
   });
 
   test("page has loading while there is no data", async () => {
